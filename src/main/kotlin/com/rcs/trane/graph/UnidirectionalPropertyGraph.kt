@@ -181,8 +181,8 @@ open class UnidirectionalPropertyGraph<K, V> {
     }
 
     /**
-     * The following two functions serve only to facilitate casting the result,
-     * which, without this, would be Set<K>
+     * The following two functions serve only to cast
+     * the result of the + operation to a SequencedSet<K>
      */
     private fun SequencedSet<K>.concat(element: K): SequencedSet<K> {
         return (this + element) as SequencedSet<K>
