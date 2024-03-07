@@ -169,7 +169,7 @@ open class UnidirectionalPropertyGraph<K, V> {
             paths.add(linkedSetOf(start, end).concat(visited))
         }
 
-        val updatedVisited = linkedSetOf(end).concat(visited)
+        val updatedVisited = linkedSetOf(end).concat(visited) // order matters!
         paths.addAll(nodes.values
             .asSequence()
             .filter { it.key != start && !updatedVisited.contains(it.key) && it.connections.contains(end) }
