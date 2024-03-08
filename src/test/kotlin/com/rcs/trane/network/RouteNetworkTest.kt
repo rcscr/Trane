@@ -12,7 +12,7 @@ class RouteNetworkTest {
         val target = RouteNetwork()
 
         // Act
-        target.addRoute("A", RouteType.UNIDIRECTIONAL, linkedSetOf(1, 2, 3), listOf(10, 20))
+        target.addRoute("A", RouteType.Unidirectional, linkedSetOf(1, 2, 3), listOf(10, 20))
 
         // Assert
         assertThat(target.graph.getNodes()).containsOnly(1, 2, 3)
@@ -43,7 +43,7 @@ class RouteNetworkTest {
         val target = RouteNetwork()
 
         // Act
-        target.addRoute("A", RouteType.UNIDIRECTIONAL_CIRCULAR, linkedSetOf(1, 2, 3), listOf(10, 20, 30))
+        target.addRoute("A", RouteType.UnidirectionalCircular, linkedSetOf(1, 2, 3), listOf(10, 20, 30))
 
         // Assert
         assertThat(target.graph.getNodes()).containsOnly(1, 2, 3)
@@ -74,7 +74,7 @@ class RouteNetworkTest {
         val target = RouteNetwork()
 
         // Act
-        target.addRoute("A", RouteType.BIDIRECTIONAL, linkedSetOf(1, 2, 3), listOf(10, 20))
+        target.addRoute("A", RouteType.Bidirectional, linkedSetOf(1, 2, 3), listOf(10, 20))
 
         // Assert
         assertThat(target.graph.getNodes()).containsOnly(1, 2, 3)
@@ -105,7 +105,7 @@ class RouteNetworkTest {
         val target = RouteNetwork()
 
         // Act
-        target.addRoute("A", RouteType.BIDIRECTIONAL_CIRCULAR, linkedSetOf(1, 2, 3), listOf(10, 20, 30))
+        target.addRoute("A", RouteType.BidirectionalCircular, linkedSetOf(1, 2, 3), listOf(10, 20, 30))
 
         // Assert
         assertThat(target.graph.getNodes()).containsOnly(1, 2, 3)

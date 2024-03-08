@@ -36,7 +36,7 @@ class RouteNetwork {
         }
 
         // if bi-directional, add edges backwards
-        if (routeType == RouteType.BIDIRECTIONAL || routeType == RouteType.BIDIRECTIONAL_CIRCULAR) {
+        if (routeType == RouteType.Bidirectional || routeType == RouteType.BidirectionalCircular) {
             for (i in (1..<stops.size).reversed()) {
                 val curr = stops.elementAt(i)
                 val prev = stops.elementAt(i - 1)
@@ -45,12 +45,12 @@ class RouteNetwork {
         }
 
         // if circular, connect last to first
-        if (routeType == RouteType.UNIDIRECTIONAL_CIRCULAR || routeType == RouteType.BIDIRECTIONAL_CIRCULAR) {
+        if (routeType == RouteType.UnidirectionalCircular || routeType == RouteType.BidirectionalCircular) {
             connect(stops.last(), stops.first(), route, distances.last())
         }
 
         // if bi-directional circular, connect first to last
-        if (routeType == RouteType.BIDIRECTIONAL_CIRCULAR) {
+        if (routeType == RouteType.BidirectionalCircular) {
             connect(stops.first(), stops.last(), route, distances.last())
         }
     }
@@ -85,7 +85,7 @@ class RouteNetwork {
             throw IllegalArgumentException("Routes must be composed of at least two stops")
         }
         when (routeType) {
-            RouteType.BIDIRECTIONAL, RouteType.UNIDIRECTIONAL -> {
+            RouteType.Bidirectional, RouteType.Unidirectional -> {
                 if (stops.size != distances.size + 1) {
                     throw IllegalArgumentException("In non-circular routes, distances.size must equal to stops.size - 1")
                 }
