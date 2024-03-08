@@ -1,6 +1,7 @@
 package com.rcs.trane.network
 
 import org.assertj.core.api.Assertions.assertThat
+import org.example.com.rcs.trane.network.Path
 import org.example.com.rcs.trane.network.RouteNetwork
 import org.junit.jupiter.api.Test
 
@@ -183,54 +184,33 @@ class RouteNetworkTest {
     }
 
     @Test
-    fun `correctly calculates the lightest path by number of routes`() {
-        // Arrange
-        val target = RouteNetwork()
-        createCommonNetwork(target)
-
+    fun `correctly calculates the lightest path by number of routes`(): Unit = with (createCommonNetwork()) {
         // Act
         val path = target.getShortestPathByRoutes(0, 13)!!
 
         // Assert
-        assertThat(path.segments).containsExactly(
-            PathSegment("A", listOf(0, 1, 2), 20),
-            PathSegment("B", listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 110))
-        assertThat(path.totalDistance).isEqualTo(130)
+        assertThat(path.segments).isEqualTo(expectedShortestPathByNumberOfRoutes.segments)
+        assertThat(path.totalDistance).isEqualTo(expectedShortestPathByNumberOfRoutes.totalDistance)
     }
 
     @Test
-    fun `correctly calculates the shortest path by number of stops`() {
-        // Arrange
-        val target = RouteNetwork()
-        createCommonNetwork(target)
-
+    fun `correctly calculates the shortest path by number of stops`(): Unit= with (createCommonNetwork()) {
         // Act
         val path = target.getShortestPathByStops(0, 13)!!
 
         // Assert
-        assertThat(path.segments).containsExactly(
-            PathSegment("A", listOf(0, 1, 2), 20),
-            PathSegment("B", listOf(2, 3, 4, 5, 6, 7), 50),
-            PathSegment("F", listOf(7, 13), 1))
-        assertThat(path.totalDistance).isEqualTo(71)
+        assertThat(path.segments).isEqualTo(expectedShortestPathByNumberOfStops.segments)
+        assertThat(path.totalDistance).isEqualTo(expectedShortestPathByNumberOfStops.totalDistance)
     }
 
     @Test
-    fun `correctly calculates the shortest path by total distance`() {
-        // Arrange
-        val target = RouteNetwork()
-        createCommonNetwork(target)
-
+    fun `correctly calculates the shortest path by total distance`(): Unit = with (createCommonNetwork()) {
         // Act
         val path = target.getShortestPathByDistance(0, 13)!!
 
         // Assert
-        assertThat(path.segments).containsExactly(
-            PathSegment("A", listOf(0, 1, 2), 20),
-            PathSegment("B", listOf(2, 3, 4), 20),
-            PathSegment("D", listOf(4, 97, 98), 2),
-            PathSegment("E", listOf(98, 99, 13), 2))
-        assertThat(path.totalDistance).isEqualTo(44)
+        assertThat(path.segments).isEqualTo(expectedShortestPathByDistance.segments)
+        assertThat(path.totalDistance).isEqualTo(expectedShortestPathByDistance.totalDistance)
     }
 
     /**
@@ -239,12 +219,42 @@ class RouteNetworkTest {
      * one with the least amount of stops, but with more routes
      * one with the shortest distance, but with the most routes
      */
-    private fun createCommonNetwork(target: RouteNetwork) {
+    private fun createCommonNetwork(): CommonNetworkData {
+        // Arrange
+        val target = RouteNetwork()
+
         target.addRoute("A", RouteType.Unidirectional, linkedSetOf(0, 1, 2), listOf(10, 10))
         target.addRoute("B", RouteType.Unidirectional, linkedSetOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), listOf(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10))
         target.addRoute("C", RouteType.Unidirectional, linkedSetOf(2, 3, 4), listOf(10, 10))
         target.addRoute("D", RouteType.Unidirectional, linkedSetOf(4, 97, 98), listOf(1, 1))
         target.addRoute("E", RouteType.Unidirectional, linkedSetOf(98, 99, 13), listOf(1, 1))
         target.addRoute("F", RouteType.Unidirectional, linkedSetOf(6, 7, 13), listOf(10, 1))
+
+        val expectedShortestPathByDistance = Path(listOf(
+            PathSegment("A", listOf(0, 1, 2), 20),
+            PathSegment("B", listOf(2, 3, 4), 20),
+            PathSegment("D", listOf(4, 97, 98), 2),
+            PathSegment("E", listOf(98, 99, 13), 2)), 44)
+
+        val expectedShortestPathByNumberOfStops = Path(listOf(
+            PathSegment("A", listOf(0, 1, 2), 20),
+            PathSegment("B", listOf(2, 3, 4, 5, 6, 7), 50),
+            PathSegment("F", listOf(7, 13), 1)), 71)
+
+        val expectedShortestPathByNumberOfRoutes = Path(listOf(
+            PathSegment("A", listOf(0, 1, 2), 20),
+            PathSegment("B", listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 110)), 130)
+
+        return CommonNetworkData(
+            target,
+            expectedShortestPathByDistance,
+            expectedShortestPathByNumberOfStops,
+            expectedShortestPathByNumberOfRoutes)
     }
+
+    data class CommonNetworkData(
+        val target: RouteNetwork,
+        val expectedShortestPathByDistance: Path,
+        val expectedShortestPathByNumberOfStops: Path,
+        val expectedShortestPathByNumberOfRoutes: Path)
 }
