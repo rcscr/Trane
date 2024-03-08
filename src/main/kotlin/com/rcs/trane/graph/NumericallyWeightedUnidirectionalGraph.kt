@@ -32,7 +32,7 @@ class NumericallyWeightedUnidirectionalGraph<K, V>: UnidirectionalPropertyGraph<
         return super.getLightestPathSimple(start, end, weightAccumulator, weightComparator, 0 as V)
     }
 
-    operator fun Number.plus(other: Number): V {
+    private operator fun Number.plus(other: Number): V {
         return when (this) {
             is Long -> this.toLong() + other.toLong()
             is Int -> this.toInt() + other.toInt()
