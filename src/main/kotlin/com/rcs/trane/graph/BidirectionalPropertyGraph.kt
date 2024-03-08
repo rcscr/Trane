@@ -1,8 +1,7 @@
 package com.rcs.trane.graph
 
 /**
- * This class is not used by Trane.
- * it has been included here only as a proof of concept.
+ * This class is not used by Trane; it has been included here only as a proof of concept.
  */
 class BidirectionalPropertyGraph<K, V>: UnidirectionalPropertyGraph<K, V>() {
 
