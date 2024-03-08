@@ -1,8 +1,8 @@
 package com.rcs.trane.graph
 
 /**
- * This is the traditional weighted-graph, implemented using the generic
- * "weighting" framework established in UnidirectionalPropertyGraph.
+ * This is the traditional weighted-graph, implemented by leveraging the generic
+ * and modular "weighting" framework established in UnidirectionalPropertyGraph.
  *
  * This class is not used by Trane; it has been included here only as a proof of concept.
  */
