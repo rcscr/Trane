@@ -4,6 +4,9 @@ package com.rcs.trane.graph
  * This is the traditional weighted-graph, implemented by leveraging the generic
  * and modular "weighting" framework established in UnidirectionalPropertyGraph.
  *
+ * The value assigned to each node is a map, such that A.map[B] is the weight
+ * associated with the edge from A to B (but not necessarily from B to A, as this is a unidirectional graph).
+ *
  * This class is not used by Trane; it has been included here only as a proof of concept.
  */
 class NumericallyWeightedUnidirectionalGraph<K, V>: UnidirectionalPropertyGraph<K, MutableMap<K, V>>()
