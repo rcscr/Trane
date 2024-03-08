@@ -2,7 +2,7 @@
 
 i.e. "Train"
 
-Also a nod to John Contrane, my favorite musician.
+Also a nod to John Coltrane, my favorite musician.
 
 <hr>
 
