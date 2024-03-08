@@ -12,7 +12,7 @@ It uses a modified version of Dijkstra's algorithm to efficiently discover the:
 
 - shortest path by number of stops
 - lightest path by a simple weight (i.e. distance)
-- lightest path by a complex weight (i.e number of route transfers)
+- lightest path by a complex weight (i.e. number of route transfers)
 
 The last two are calculated with a single dynamically-modifiable base algorithm. In this modular algorithm, custom lambdas are passed in as arguments to calculate the "weight" between two nodes. This concept is know as the "strategy" design pattern, wherein parts of an algorithm can be injected and swapped.
 
