@@ -11,10 +11,10 @@ Trane is a library for modeling transportation networks (buses, subways, trains)
 It uses a modified version of Dijkstra's algorithm to efficiently discover the:
 
 - shortest path by number of stops
-- lightest path by weight (i.e. distance)
-- lightest path by number of route transfers 
+- lightest path by a one-dimensional weight (i.e. distance)
+- lightest path by a higher-dimensional weight (i.e number of route transfers)
 
-All of these are calculated with a single dynamically-modifiable base algorithm. In this modular algorithm, custom lambdas are passed in as arguments to calculate the "weight" between two nodes. This concept is know as the "strategy" design pattern, wherein parts of an algorithm can be injected and swapped.
+The last two are calculated with a single dynamically-modifiable base algorithm. In this modular algorithm, custom lambdas are passed in as arguments to calculate the "weight" between two nodes. This concept is know as the "strategy" design pattern, wherein parts of an algorithm can be injected and swapped.
 
 
 Future work includes:
