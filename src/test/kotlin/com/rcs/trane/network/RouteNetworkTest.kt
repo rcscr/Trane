@@ -181,4 +181,70 @@ class RouteNetworkTest {
                 mutableMapOf(4 to 50, 3 to 60),
                 mutableMapOf(4 to mutableSetOf("B"), 3 to mutableSetOf("B"))))
     }
+
+    @Test
+    fun `correctly calculates the lightest path by number of routes`() {
+        // Arrange
+        val target = RouteNetwork()
+        createCommonNetwork(target)
+
+        // Act
+        val path = target.getShortestPathByRoutes(0, 13)!!
+
+        // Assert
+        assertThat(path.segments).containsExactly(
+            PathSegment("A", listOf(0, 1, 2), 20),
+            PathSegment("B", listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 110))
+        assertThat(path.totalDistance).isEqualTo(130)
+    }
+
+    @Test
+    fun `correctly calculates the shortest path by number of stops`() {
+        // Arrange
+        val target = RouteNetwork()
+        createCommonNetwork(target)
+
+        // Act
+        val path = target.getShortestPathByStops(0, 13)!!
+
+        // Assert
+        assertThat(path.segments).containsExactly(
+            PathSegment("A", listOf(0, 1, 2), 20),
+            PathSegment("B", listOf(2, 3, 4, 5, 6, 7), 50),
+            PathSegment("F", listOf(7, 13), 1))
+        assertThat(path.totalDistance).isEqualTo(71)
+    }
+
+    @Test
+    fun `correctly calculates the shortest path by total distance`() {
+        // Arrange
+        val target = RouteNetwork()
+        createCommonNetwork(target)
+
+        // Act
+        val path = target.getShortestPathByDistance(0, 13)!!
+
+        // Assert
+        assertThat(path.segments).containsExactly(
+            PathSegment("A", listOf(0, 1, 2), 20),
+            PathSegment("B", listOf(2, 3, 4), 20),
+            PathSegment("D", listOf(4, 97, 98), 2),
+            PathSegment("E", listOf(98, 99, 13), 2))
+        assertThat(path.totalDistance).isEqualTo(44)
+    }
+
+    /**
+     * In this network, there are multiple paths from 0 to 13:
+     * one with the least amount of routes, but with the most amount of stops
+     * one with the least amount of stops, but with more routes
+     * one with the shortest distance, but with the most routes
+     */
+    private fun createCommonNetwork(target: RouteNetwork) {
+        target.addRoute("A", RouteType.Unidirectional, linkedSetOf(0, 1, 2), listOf(10, 10))
+        target.addRoute("B", RouteType.Unidirectional, linkedSetOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), listOf(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10))
+        target.addRoute("C", RouteType.Unidirectional, linkedSetOf(2, 3, 4), listOf(10, 10))
+        target.addRoute("D", RouteType.Unidirectional, linkedSetOf(4, 97, 98), listOf(1, 1))
+        target.addRoute("E", RouteType.Unidirectional, linkedSetOf(98, 99, 13), listOf(1, 1))
+        target.addRoute("F", RouteType.Unidirectional, linkedSetOf(6, 7, 13), listOf(10, 1))
+    }
 }
