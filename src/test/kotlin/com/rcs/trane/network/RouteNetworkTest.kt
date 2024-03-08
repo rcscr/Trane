@@ -230,17 +230,20 @@ class RouteNetworkTest {
         target.addRoute("E", RouteType.Unidirectional, linkedSetOf(98, 99, 13), listOf(1, 1))
         target.addRoute("F", RouteType.Unidirectional, linkedSetOf(6, 7, 13), listOf(10, 1))
 
+        // distance: 44; routes: 4; stops: 9
         val expectedShortestPathByDistance = Path(listOf(
             PathSegment("A", listOf(0, 1, 2), 20),
             PathSegment("B", listOf(2, 3, 4), 20),
             PathSegment("D", listOf(4, 97, 98), 2),
             PathSegment("E", listOf(98, 99, 13), 2)), 44)
 
+        // distance: 71; routes: 3; stops: 8
         val expectedShortestPathByNumberOfStops = Path(listOf(
             PathSegment("A", listOf(0, 1, 2), 20),
             PathSegment("B", listOf(2, 3, 4, 5, 6, 7), 50),
             PathSegment("F", listOf(7, 13), 1)), 71)
 
+        // distance: 130; routes: 2; stops: 13
         val expectedShortestPathByNumberOfRoutes = Path(listOf(
             PathSegment("A", listOf(0, 1, 2), 20),
             PathSegment("B", listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 110)), 130)
