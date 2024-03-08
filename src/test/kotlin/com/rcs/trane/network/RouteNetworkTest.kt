@@ -22,11 +22,19 @@ class RouteNetworkTest {
         assertThat(target.graph.getConnections(3)).isEmpty()
 
         assertThat(target.graph.getValue(1))
-            .isEqualTo(StopData(mutableMapOf(2 to 10), mutableMapOf(2 to mutableSetOf("A"))))
+            .isEqualTo(StopData(
+                mutableMapOf(2 to 10),
+                mutableMapOf(2 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(2))
-            .isEqualTo(StopData(mutableMapOf(3 to 20), mutableMapOf(3 to mutableSetOf("A"))))
+            .isEqualTo(StopData(
+                mutableMapOf(3 to 20),
+                mutableMapOf(3 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(3))
-            .isEqualTo(StopData(mutableMapOf(), mutableMapOf()))
+            .isEqualTo(StopData(
+                mutableMapOf(),
+                mutableMapOf()))
     }
 
     @Test
@@ -48,10 +56,12 @@ class RouteNetworkTest {
             .isEqualTo(StopData(
                 mutableMapOf(2 to 10),
                 mutableMapOf(2 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(2))
             .isEqualTo(StopData(
                 mutableMapOf(3 to 20),
                 mutableMapOf(3 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(3))
             .isEqualTo(StopData(
                 mutableMapOf(1 to 30),
@@ -74,11 +84,19 @@ class RouteNetworkTest {
         assertThat(target.graph.getConnections(3)).containsOnly(2)
 
         assertThat(target.graph.getValue(1))
-            .isEqualTo(StopData(mutableMapOf(2 to 10), mutableMapOf(2 to mutableSetOf("A"))))
+            .isEqualTo(StopData(
+                mutableMapOf(2 to 10),
+                mutableMapOf(2 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(2))
-            .isEqualTo(StopData(mutableMapOf(1 to 10, 3 to 20), mutableMapOf(1 to mutableSetOf("A"), 3 to mutableSetOf("A"))))
+            .isEqualTo(StopData(
+                mutableMapOf(1 to 10, 3 to 20),
+                mutableMapOf(1 to mutableSetOf("A"), 3 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(3))
-            .isEqualTo(StopData(mutableMapOf(2 to 20), mutableMapOf(2 to mutableSetOf("A"))))
+            .isEqualTo(StopData(
+                mutableMapOf(2 to 20),
+                mutableMapOf(2 to mutableSetOf("A"))))
     }
 
     @Test
@@ -100,10 +118,12 @@ class RouteNetworkTest {
             .isEqualTo(StopData(
                 mutableMapOf(2 to 10, 3 to 30),
                 mutableMapOf(2 to mutableSetOf("A"), 3 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(2))
             .isEqualTo(StopData(
                 mutableMapOf(3 to 20, 1 to 10),
                 mutableMapOf(3 to mutableSetOf("A"), 1 to mutableSetOf("A"))))
+
         assertThat(target.graph.getValue(3))
             .isEqualTo(StopData(
                 mutableMapOf(2 to 20, 1 to 30),
