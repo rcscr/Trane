@@ -8,29 +8,6 @@ import java.util.SequencedSet
 
 class RouteNetwork {
 
-    private val pathBuilder = { path: Path, nodeA: Int, nodeB: Int ->
-        val nodeAValue = graph.getValue(nodeA)!!
-        nodeAValue.routes[nodeB]!!
-            .map {
-                val newPathSegment = PathSegment(it, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
-                Path(
-                    mergePathSegmentIntoPath(path.segments, newPathSegment),
-                    path.totalDistance + nodeAValue.distances[nodeB]!!)
-            }
-    }
-
-    private val pathByNumberOfRoutes = { pathA: Path, pathB: Path ->
-        pathA.numberOfRoutes().compareTo(pathB.numberOfRoutes())
-    }
-
-    private val pathByNumberOfStops = { pathA: Path, pathB: Path ->
-        pathA.numberOfStops().compareTo(pathB.numberOfStops())
-    }
-
-    private val pathByDistance = { pathA: Path, pathB: Path ->
-        pathA.totalDistance.compareTo(pathB.totalDistance)
-    }
-
     /**
      * Stops are ID'ed by integers here, but it can be any data type
      */
@@ -79,39 +56,33 @@ class RouteNetwork {
     }
 
     fun getShortestPathByDistance(start: Int, end: Int): Path? {
-        return graph.getLightestPathComplex(start, end, pathBuilder, pathByDistance, Path(listOf(), 0))?.weight
+        return graph.getLightestPathComplex(
+            start,
+            end,
+            this::pathBuilder,
+            this::pathByDistance,
+            initialPath())
+            ?.weight
     }
 
     fun getShortestPathByRoutes(start: Int, end: Int): Path? {
-        return graph.getLightestPathComplex(start, end, pathBuilder, pathByNumberOfRoutes, Path(listOf(), 0))?.weight
+        return graph.getLightestPathComplex(
+            start,
+            end,
+            this::pathBuilder,
+            this::pathByNumberOfRoutes,
+            initialPath())
+            ?.weight
     }
 
     fun getShortestPathByStops(start: Int, end: Int): Path? {
-        return graph.getLightestPathComplex(start, end, pathBuilder, pathByNumberOfStops, Path(listOf(), 0))?.weight
-    }
-
-    private fun mergePathSegmentIntoPath(path: List<PathSegment>, pathSegment: PathSegment): List<PathSegment> {
-        if (path.isNotEmpty() && path.last().route == pathSegment.route) {
-            val lastSegment = path.last()
-
-            // this should never happen as used internally
-            if (lastSegment.stops.last() != pathSegment.stops.first()) {
-                throw AssertionError(
-                    "The last element of the path must be equal to " +
-                            "the first element of the path segment being added.")
-            }
-
-            val pathWithoutLastSegment = path.subList(0, path.size - 1)
-            val newSegmentWithoutFirstStop = pathSegment.stops.subList(1, pathSegment.stops.size)
-            val mergedSegment = PathSegment(
-                pathSegment.route,
-                lastSegment.stops + newSegmentWithoutFirstStop,
-                lastSegment.distance + pathSegment.distance)
-
-            return pathWithoutLastSegment + mergedSegment
-        }
-
-        return path + pathSegment
+        return graph.getLightestPathComplex(
+            start,
+            end,
+            this::pathBuilder,
+            this::pathByNumberOfStops,
+            initialPath())
+            ?.weight
     }
 
     private fun validate(routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
@@ -141,5 +112,56 @@ class RouteNetwork {
                 else -> it.routes[stopB]!!.add(route)
             }
         }
+    }
+
+    private fun pathBuilder(path: Path, nodeA: Int, nodeB: Int): List<Path> {
+        val nodeAValue = graph.getValue(nodeA)!!
+        return nodeAValue.routes[nodeB]!!
+            .map {
+                val newPathSegment = PathSegment(it, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
+                Path(
+                    mergePathSegmentIntoPath(path.segments, newPathSegment),
+                    path.totalDistance + nodeAValue.distances[nodeB]!!)
+            }
+    }
+
+    private fun pathByNumberOfRoutes(pathA: Path, pathB: Path): Int {
+        return pathA.numberOfRoutes().compareTo(pathB.numberOfRoutes())
+    }
+
+    private fun pathByNumberOfStops(pathA: Path, pathB: Path): Int {
+        return pathA.numberOfStops().compareTo(pathB.numberOfStops())
+    }
+
+    private fun pathByDistance(pathA: Path, pathB: Path): Int {
+        return pathA.totalDistance.compareTo(pathB.totalDistance)
+    }
+
+    private fun initialPath(): Path {
+        return Path(listOf(), 0)
+    }
+
+    private fun mergePathSegmentIntoPath(path: List<PathSegment>, pathSegment: PathSegment): List<PathSegment> {
+        if (path.isNotEmpty() && path.last().route == pathSegment.route) {
+            val lastSegment = path.last()
+
+            // this should never happen as used internally
+            if (lastSegment.stops.last() != pathSegment.stops.first()) {
+                throw AssertionError(
+                    "The last element of the path must be equal to " +
+                            "the first element of the path segment being added.")
+            }
+
+            val pathWithoutLastSegment = path.subList(0, path.size - 1)
+            val newSegmentWithoutFirstStop = pathSegment.stops.subList(1, pathSegment.stops.size)
+            val mergedSegment = PathSegment(
+                pathSegment.route,
+                lastSegment.stops + newSegmentWithoutFirstStop,
+                lastSegment.distance + pathSegment.distance)
+
+            return pathWithoutLastSegment + mergedSegment
+        }
+
+        return path + pathSegment
     }
 }
