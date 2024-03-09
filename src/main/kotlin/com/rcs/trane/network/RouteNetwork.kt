@@ -18,7 +18,7 @@ class RouteNetwork {
      * corresponds to the distance between stops[i] and stops[i+1]
      */
     fun addRoute(route: String, routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
-        validate(routeType, stops, distances)
+        validate(route, routeType, stops, distances)
 
         // add nodes
         for (stop in stops) {
@@ -85,7 +85,13 @@ class RouteNetwork {
             ?.weight
     }
 
-    private fun validate(routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
+    private fun validate(route: String, routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
+        val routeExists = graph.getNodes().any {
+            graph.getValue(it)?.routes?.values?.flatten()?.contains(route) == true
+        }
+        if (routeExists) {
+            throw IllegalStateException("Route $route already exists")
+        }
         if (stops.size < 2) {
             throw IllegalArgumentException("Routes must be composed of at least two stops")
         }

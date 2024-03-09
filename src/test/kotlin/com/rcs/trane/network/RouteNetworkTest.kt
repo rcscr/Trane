@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.example.com.rcs.trane.network.Path
 import org.example.com.rcs.trane.network.RouteNetwork
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFailsWith
 
 class RouteNetworkTest {
 
@@ -181,6 +182,21 @@ class RouteNetworkTest {
             .isEqualTo(StopData(
                 mutableMapOf(4 to 50, 3 to 60),
                 mutableMapOf(4 to mutableSetOf("B"), 3 to mutableSetOf("B"))))
+    }
+
+
+
+    @Test
+    fun `adding multiple routes with the same ID fails `() {
+        // Arrange
+        val target = RouteNetwork()
+        target.addRoute("ROUTE_NAME", RouteType.BidirectionalCircular, linkedSetOf(1, 2, 3), listOf(10, 20, 30))
+
+        // Act & Assert
+        val exception = assertFailsWith<IllegalStateException> {
+            target.addRoute("ROUTE_NAME", RouteType.BidirectionalCircular, linkedSetOf(3, 4, 5), listOf(40, 50, 60))
+        }
+        assertThat(exception.message).contains("ROUTE_NAME")
     }
 
     @Test
