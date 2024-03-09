@@ -14,7 +14,7 @@ fun nextNDays(time: Instant, days: Int): List<Instant> {
 fun main() {
     val routeNetwork = ScheduledRouteNetwork()
 
-    routeNetwork.addRouteWithTimetable(
+    routeNetwork.addScheduledRoute(
         "A",
         RouteType.Unidirectional,
         linkedSetOf(0, 1, 2),
@@ -26,7 +26,7 @@ fun main() {
         )
     )
 
-    routeNetwork.addRouteWithTimetable(
+    routeNetwork.addScheduledRoute(
         "B",
         RouteType.Unidirectional,
         linkedSetOf(2, 3, 4),

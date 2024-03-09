@@ -9,7 +9,7 @@ import java.util.SequencedSet
 
 class ScheduledRouteNetwork: RouteNetwork() {
 
-    fun addRouteWithTimetable(
+    fun addScheduledRoute(
         route: String,
         routeType: RouteType,
         stops: SequencedSet<Int>,

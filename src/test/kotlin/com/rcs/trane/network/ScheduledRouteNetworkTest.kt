@@ -38,7 +38,7 @@ class ScheduledRouteNetworkTest {
 
         val now = Instant.now()
 
-        target.addRouteWithTimetable(
+        target.addScheduledRoute(
             "A",
             RouteType.Unidirectional,
             linkedSetOf(0, 1, 2),
@@ -50,7 +50,7 @@ class ScheduledRouteNetworkTest {
             )
         )
 
-        target.addRouteWithTimetable(
+        target.addScheduledRoute(
             "B",
             RouteType.Unidirectional,
             linkedSetOf(2, 3, 4),
@@ -62,7 +62,7 @@ class ScheduledRouteNetworkTest {
             )
         )
 
-        target.addRouteWithTimetable(
+        target.addScheduledRoute(
             "C",
             RouteType.Unidirectional,
             linkedSetOf(2, 3, 4),
@@ -100,7 +100,7 @@ class ScheduledRouteNetworkTest {
 
         val now = Instant.now()
 
-        target.addRouteWithTimetable(
+        target.addScheduledRoute(
             "A",
             RouteType.Unidirectional,
             linkedSetOf(0, 1, 2),
