@@ -103,6 +103,10 @@ open class UnidirectionalPropertyGraph<K, V> {
         return null
     }
 
+    /**
+     * A convenience method that wraps the result of the weightAccumulator function
+     * into a list, making it compatible with the function below
+     */
     fun <W> getLightestPathSimple(
         start: K,
         end: K,
@@ -119,9 +123,9 @@ open class UnidirectionalPropertyGraph<K, V> {
     }
 
     /**
-     * modified Dijkstra's algorithm to:
-     * - compute the weight between two nodes via lambdas passed in as params
-     * - split an edge into multiple edges based on different weights
+     * This is a modified Dijkstra's algorithm that:
+     * - computes the weight between two nodes via lambdas passed in as params
+     * - splits an edge into multiple edges based on different weights
      */
     fun <W> getLightestPathComplex(
         start: K,
