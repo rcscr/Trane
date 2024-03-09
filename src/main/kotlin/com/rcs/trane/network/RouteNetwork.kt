@@ -8,6 +8,29 @@ import java.util.SequencedSet
 
 class RouteNetwork {
 
+    private val pathBuilder = { path: Path, nodeA: Int, nodeB: Int ->
+        val nodeAValue = graph.getValue(nodeA)!!
+        nodeAValue.routes[nodeB]!!
+            .map {
+                val newPathSegment = PathSegment(it, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
+                Path(
+                    mergePathSegmentIntoPath(path.segments, newPathSegment),
+                    path.totalDistance + nodeAValue.distances[nodeB]!!)
+            }
+    }
+
+    private val pathByNumberOfRoutes = { pathA: Path, pathB: Path ->
+        pathA.numberOfRoutes().compareTo(pathB.numberOfRoutes())
+    }
+
+    private val pathByNumberOfStops = { pathA: Path, pathB: Path ->
+        pathA.numberOfStops().compareTo(pathB.numberOfStops())
+    }
+
+    private val pathByDistance = { pathA: Path, pathB: Path ->
+        pathA.totalDistance.compareTo(pathB.totalDistance)
+    }
+
     /**
      * Stops are ID'ed by integers here, but it can be any data type
      */
@@ -56,37 +79,15 @@ class RouteNetwork {
     }
 
     fun getShortestPathByDistance(start: Int, end: Int): Path? {
-        val lightestPath = graph.getLightestPathSimple(
-            start,
-            end,
-            { weight, nodeA, nodeB -> weight + graph.getValue(nodeA)!!.distances[nodeB]!! },
-            { weightA, weightB -> weightA.compareTo(weightB) },
-            0)
-        return lightestPath?.let { enrichPathWithRoutesAndDistance(it.path) }
+        return graph.getLightestPathComplex(start, end, pathBuilder, pathByDistance, Path(listOf(), 0))?.weight
     }
 
     fun getShortestPathByRoutes(start: Int, end: Int): Path? {
-        return graph.getLightestPathComplex(
-            start,
-            end,
-            { path, nodeA, nodeB ->
-                val nodeAValue = graph.getValue(nodeA)!!
-                nodeAValue.routes[nodeB]!!
-                    .map {
-                        val newPathSegment = PathSegment(it, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
-                        Path(
-                            mergePathSegmentIntoPath(path.segments, newPathSegment),
-                            path.totalDistance + nodeAValue.distances[nodeB]!!)
-                    }
-            },
-            { pathA, pathB -> pathA.numberOfRoutes().compareTo(pathB.numberOfRoutes()) },
-            Path(listOf(), 0))
-            ?.weight
+        return graph.getLightestPathComplex(start, end, pathBuilder, pathByNumberOfRoutes, Path(listOf(), 0))?.weight
     }
 
     fun getShortestPathByStops(start: Int, end: Int): Path? {
-        val shortestPath = graph.getShortestPath(start, end)
-        return shortestPath?.let { enrichPathWithRoutesAndDistance(it) }
+        return graph.getLightestPathComplex(start, end, pathBuilder, pathByNumberOfStops, Path(listOf(), 0))?.weight
     }
 
     private fun mergePathSegmentIntoPath(path: List<PathSegment>, pathSegment: PathSegment): List<PathSegment> {
@@ -140,58 +141,5 @@ class RouteNetwork {
                 else -> it.routes[stopB]!!.add(route)
             }
         }
-    }
-
-    /**
-     * TODO: retire this in favor of build path via weight accumulation, as in getShortestPathByRoutes
-     */
-    private fun enrichPathWithRoutesAndDistance(path: SequencedSet<Int>): Path {
-        val startAndRoute = path.map { Pair(it, graph.getValue(it)!!.routes) }
-
-        val pathWithRoutes = mutableListOf<PathSegment>()
-        var i = 0
-        val range = 0..startAndRoute.size-2
-
-        while (i in range) {
-            var curr = startAndRoute[i]
-            var next = startAndRoute[i + 1]
-
-            val routeOptions = curr.second[next.first]!!
-
-            val bestRoute = when {
-                // if going from i to i+1 is possible via the same route as from i-1 to i, continue on that route
-                pathWithRoutes.isNotEmpty() && routeOptions.contains(pathWithRoutes.last().route) ->
-                    pathWithRoutes.last().route
-                // else select the route that goes farthest
-                else -> {
-                    routeOptions.maxBy { route ->
-                        var depth = 0
-                        var j = i + 1
-                        while (j + 1 < startAndRoute.size && startAndRoute[j].second[startAndRoute[j+1].first]!!.contains(route)) {
-                            j++
-                            depth++
-                        }
-                        depth
-                    }
-                }
-            }
-
-            val stopsInThisRoute = mutableListOf(curr.first)
-            var distance = 0
-            while (curr.second[next.first]!!.contains(bestRoute)) {
-                stopsInThisRoute.add(next.first)
-                distance += graph.getValue(curr.first)!!.distances[next.first]!!
-                if (++i in range) {
-                    curr = startAndRoute[i]
-                    next = startAndRoute[i + 1]
-                } else {
-                    break
-                }
-            }
-
-            pathWithRoutes.add(PathSegment(bestRoute, stopsInThisRoute, distance))
-        }
-
-        return Path(pathWithRoutes.toList(), pathWithRoutes.sumOf { it.distance })
     }
 }

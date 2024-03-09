@@ -6,4 +6,9 @@ data class Path(val segments: List<PathSegment>, val totalDistance: Int) {
     internal fun numberOfRoutes(): Int {
         return segments.map { it.route }.distinct().count()
     }
+    internal fun numberOfStops(): Int {
+        return segments
+            .mapIndexed { i, seg -> if (i == 0) seg.stops.size else seg.stops.size - 1 }
+            .sum()
+    }
 }
