@@ -21,7 +21,7 @@ These are calculated by leveraging a single generic, dynamically-modifiable base
 ### Example
 
 <pre>
-Discovering quickest (by duration) path stop 0 to stop 4
+Discovering quickest path (by duration) from stop 0 to stop 4
 Desired departure time: 2024-03-10T12:10:00Z
 Quickest path:
 ScheduledPathSegment(route=A, stops=[0, 1, 2], distance=6, departure=2024-03-10T12:30:00Z, arrival=2024-03-10T14:30:00Z)

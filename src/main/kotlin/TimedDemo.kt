@@ -42,7 +42,7 @@ fun main() {
 
     val path = routeNetwork.getShortestPathByTime(0, 4, desiredDepartureTime)!!
 
-    println("Discovering quickest (by duration) path stop 0 to stop 4")
+    println("Discovering quickest path (by duration) from stop 0 to stop 4")
     println("Desired departure time: $desiredDepartureTime")
     println("Quickest path:")
     path.segments.forEach { println(it) }
