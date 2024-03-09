@@ -190,7 +190,8 @@ class RouteNetworkTest {
 
         // Assert
         assertThat(path.segments).isEqualTo(expectedShortestPathByNumberOfRoutes.segments)
-        assertThat(path.totalDistance).isEqualTo(expectedShortestPathByNumberOfRoutes.totalDistance)
+        assertThat(path.totalDistance())
+            .isEqualTo(expectedShortestPathByNumberOfRoutes.segments.sumOf { it.distance })
     }
 
     @Test
@@ -200,7 +201,8 @@ class RouteNetworkTest {
 
         // Assert
         assertThat(path.segments).isEqualTo(expectedShortestPathByNumberOfStops.segments)
-        assertThat(path.totalDistance).isEqualTo(expectedShortestPathByNumberOfStops.totalDistance)
+        assertThat(path.totalDistance())
+            .isEqualTo(expectedShortestPathByNumberOfStops.segments.sumOf { it.distance })
     }
 
     @Test
@@ -210,7 +212,8 @@ class RouteNetworkTest {
 
         // Assert
         assertThat(path.segments).isEqualTo(expectedShortestPathByDistance.segments)
-        assertThat(path.totalDistance).isEqualTo(expectedShortestPathByDistance.totalDistance)
+        assertThat(path.totalDistance())
+            .isEqualTo(expectedShortestPathByDistance.segments.sumOf { it.distance })
     }
 
     /**
@@ -235,21 +238,18 @@ class RouteNetworkTest {
             PathSegment("A", listOf(0, 1, 2), 20),
             PathSegment("B", listOf(2, 3, 4), 20),
             PathSegment("D", listOf(4, 97, 98), 2),
-            PathSegment("E", listOf(98, 99, 13), 2)),
-            44)
+            PathSegment("E", listOf(98, 99, 13), 2)))
 
         // distance: 71; routes: 3; stops: 8
         val expectedShortestPathByNumberOfStops = Path(listOf(
             PathSegment("A", listOf(0, 1, 2), 20),
             PathSegment("B", listOf(2, 3, 4, 5), 30),
-            PathSegment("F", listOf(5, 6, 13), 11)),
-            61)
+            PathSegment("F", listOf(5, 6, 13), 11)))
 
         // distance: 130; routes: 2; stops: 13
         val expectedShortestPathByNumberOfRoutes = Path(listOf(
             PathSegment("A", listOf(0, 1, 2), 20),
-            PathSegment("B", listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 110)),
-            130)
+            PathSegment("B", listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13), 110)))
 
         return CommonNetworkData(
             target,

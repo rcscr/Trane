@@ -119,9 +119,7 @@ class RouteNetwork {
         return nodeAValue.routes[nodeB]!!
             .map {
                 val newPathSegment = PathSegment(it, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
-                Path(
-                    mergePathSegmentIntoPath(path.segments, newPathSegment),
-                    path.totalDistance + nodeAValue.distances[nodeB]!!)
+                Path(mergePathSegmentIntoPath(path.segments, newPathSegment))
             }
     }
 
@@ -134,11 +132,11 @@ class RouteNetwork {
     }
 
     private fun pathByDistance(pathA: Path, pathB: Path): Int {
-        return pathA.totalDistance.compareTo(pathB.totalDistance)
+        return pathA.totalDistance().compareTo(pathB.totalDistance())
     }
 
     private fun initialPath(): Path {
-        return Path(listOf(), 0)
+        return Path(listOf())
     }
 
     private fun mergePathSegmentIntoPath(path: List<PathSegment>, pathSegment: PathSegment): List<PathSegment> {
