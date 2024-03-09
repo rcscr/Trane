@@ -6,7 +6,7 @@ import com.rcs.trane.network.RouteType
 import com.rcs.trane.network.StopData
 import java.util.SequencedSet
 
-class RouteNetwork {
+open class RouteNetwork {
 
     /**
      * Stops are ID'ed by integers here, but it can be any data type
@@ -85,7 +85,7 @@ class RouteNetwork {
             ?.weight
     }
 
-    private fun validate(route: String, routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
+    protected fun validate(route: String, routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
         val routeExists = graph.getNodes().any {
             graph.getValue(it)?.routes?.values?.flatten()?.contains(route) == true
         }
@@ -123,8 +123,8 @@ class RouteNetwork {
     private fun pathBuilder(path: Path, nodeA: Int, nodeB: Int): List<Path> {
         val nodeAValue = graph.getValue(nodeA)!!
         return nodeAValue.routes[nodeB]!!
-            .map {
-                val newPathSegment = PathSegment(it, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
+            .map { route ->
+                val newPathSegment = PathSegment(route, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
                 Path(mergePathSegmentIntoPath(path.segments, newPathSegment))
             }
     }
@@ -161,8 +161,8 @@ class RouteNetwork {
             val mergedSegment = PathSegment(
                 pathSegment.route,
                 lastSegment.stops + newSegmentWithoutFirstStop,
-                lastSegment.distance + pathSegment.distance)
-
+                lastSegment.distance + pathSegment.distance
+            )
             return pathWithoutLastSegment + mergedSegment
         }
 

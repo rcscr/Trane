@@ -7,7 +7,7 @@ import kotlin.collections.ArrayDeque
 
 open class UnidirectionalPropertyGraph<K, V> {
 
-    protected data class Node<K, V>(val key: K, val value: V, val connections: MutableSet<K>)
+    protected data class Node<K, V>(val key: K, var value: V, val connections: MutableSet<K>)
 
     protected val nodes = hashMapOf<K, Node<K, V>>()
 
@@ -17,6 +17,13 @@ open class UnidirectionalPropertyGraph<K, V> {
 
     fun getValue(key: K): V? {
         return nodes[key]?.value
+    }
+
+    fun setValue(key: K, value: V) {
+        if (!nodes.contains(key)) {
+            throw NoSuchElementException("Node $key does not exist")
+        }
+        nodes[key]!!.value = value
     }
 
     fun contains(key: K): Boolean {
