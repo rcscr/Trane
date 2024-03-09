@@ -6,7 +6,6 @@ import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.SequencedSet
-import kotlin.math.exp
 
 class TimedRouteNetwork: RouteNetwork() {
 
@@ -59,17 +58,6 @@ class TimedRouteNetwork: RouteNetwork() {
             throw IllegalArgumentException("Each stop must have a corresponding timetable")
         }
         super.validate(route, routeType, stops, distances)
-    }
-
-    private fun connect(stopA: Int, stopB: Int, route: String, distance: Int) {
-        graph.addEdge(stopA, stopB)
-        graph.getValue(stopA)?.let {
-            it.distances[stopB] = distance
-            when (it.routes[stopB]) {
-                null -> it.routes[stopB] = linkedSetOf(route)
-                else -> it.routes[stopB]!!.add(route)
-            }
-        }
     }
 
     private fun timedPathBuilder(depart: Instant): (path: TimedPath, nodeA: Int, nodeB: Int) -> List<TimedPath> {
