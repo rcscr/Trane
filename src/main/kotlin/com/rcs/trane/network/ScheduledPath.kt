@@ -2,7 +2,7 @@ package org.example.com.rcs.trane.network
 
 import java.time.Duration
 
-data class TimedPath(val segments: List<TimedPathSegment>) {
+data class ScheduledPath(val segments: List<ScheduledPathSegment>) {
 
     fun timeWaitingMillis(): Long {
         return segments.indices.sumOf { i ->

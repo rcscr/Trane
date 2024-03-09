@@ -1,7 +1,7 @@
 package org.example
 
 import com.rcs.trane.network.RouteType
-import org.example.com.rcs.trane.network.TimedRouteNetwork
+import org.example.com.rcs.trane.network.ScheduledRouteNetwork
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -12,7 +12,7 @@ fun nextNDays(time: Instant, days: Int): List<Instant> {
 }
 
 fun main() {
-    val routeNetwork = TimedRouteNetwork()
+    val routeNetwork = ScheduledRouteNetwork()
 
     routeNetwork.addRouteWithTimetable(
         "A",

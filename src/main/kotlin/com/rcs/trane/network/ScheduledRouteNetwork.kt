@@ -7,7 +7,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.SequencedSet
 
-class TimedRouteNetwork: RouteNetwork() {
+class ScheduledRouteNetwork: RouteNetwork() {
 
     fun addRouteWithTimetable(
         route: String,
@@ -34,12 +34,12 @@ class TimedRouteNetwork: RouteNetwork() {
         }
     }
 
-    fun getShortestPathByTime(start: Int, end: Int, depart: Instant): TimedPath? {
+    fun getShortestPathByTime(start: Int, end: Int, depart: Instant): ScheduledPath? {
         return graph.getLightestPathComplex(
             start,
             end,
-            timedPathBuilder(depart),
-            this::timedPathByDuration,
+            scheduledPathBuilder(depart),
+            this::scheduledPathByDuration,
             initialTimedPath())
             ?.weight
     }
@@ -60,8 +60,8 @@ class TimedRouteNetwork: RouteNetwork() {
         super.validate(route, routeType, stops, distances)
     }
 
-    private fun timedPathBuilder(depart: Instant): (path: TimedPath, nodeA: Int, nodeB: Int) -> List<TimedPath> {
-        return { path: TimedPath, nodeA: Int, nodeB: Int ->
+    private fun scheduledPathBuilder(depart: Instant): (path: ScheduledPath, nodeA: Int, nodeB: Int) -> List<ScheduledPath> {
+        return { path: ScheduledPath, nodeA: Int, nodeB: Int ->
             var currentTime = depart
 
             if (path.segments.isNotEmpty()) {
@@ -86,28 +86,28 @@ class TimedRouteNetwork: RouteNetwork() {
                                     "departure from $nodeA but no corresponding arrival at $nodeB")
                         }
 
-                        val newPathSegment = TimedPathSegment(
+                        val newPathSegment = ScheduledPathSegment(
                             route,
                             listOf(nodeA, nodeB),
                             nodeAValue.distances[nodeB]!!,
                             nextDeparture,
                             arrival
                         )
-                        TimedPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
+                        ScheduledPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
                     }
                 }
         }
     }
 
-    private fun timedPathByDuration(pathA: TimedPath, pathB: TimedPath): Int {
+    private fun scheduledPathByDuration(pathA: ScheduledPath, pathB: ScheduledPath): Int {
         return pathA.totalDurationMillis().compareTo(pathB.totalDurationMillis())
     }
 
-    private fun initialTimedPath(): TimedPath {
-        return TimedPath(listOf())
+    private fun initialTimedPath(): ScheduledPath {
+        return ScheduledPath(listOf())
     }
 
-    private fun mergePathSegmentIntoPath(path: List<TimedPathSegment>, pathSegment: TimedPathSegment): List<TimedPathSegment> {
+    private fun mergePathSegmentIntoPath(path: List<ScheduledPathSegment>, pathSegment: ScheduledPathSegment): List<ScheduledPathSegment> {
         if (path.isNotEmpty() && path.last().route == pathSegment.route) {
             val lastSegment = path.last()
 
@@ -120,7 +120,7 @@ class TimedRouteNetwork: RouteNetwork() {
 
             val pathWithoutLastSegment = path.subList(0, path.size - 1)
             val newSegmentWithoutFirstStop = pathSegment.stops.subList(1, pathSegment.stops.size)
-            val mergedSegment = TimedPathSegment(
+            val mergedSegment = ScheduledPathSegment(
                 pathSegment.route,
                 lastSegment.stops + newSegmentWithoutFirstStop,
                 lastSegment.distance + pathSegment.distance,

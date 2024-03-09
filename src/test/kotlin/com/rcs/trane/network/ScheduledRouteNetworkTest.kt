@@ -1,39 +1,40 @@
 package com.rcs.trane.network
 
 import org.assertj.core.api.Assertions.assertThat
-import org.example.com.rcs.trane.network.TimedPath
-import org.example.com.rcs.trane.network.TimedPathSegment
-import org.example.com.rcs.trane.network.TimedRouteNetwork
+import org.example.com.rcs.trane.network.ScheduledPath
+import org.example.com.rcs.trane.network.ScheduledPathSegment
+import org.example.com.rcs.trane.network.ScheduledRouteNetwork
 import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlin.test.assertFailsWith
 
-class TimedRouteNetworkTest {
+class ScheduledRouteNetworkTest {
 
     @Test
-    fun `correctly calculates the lightest path by duration`(): Unit = with(timedNetwork()) {
+    fun `correctly calculates the lightest path by duration`(): Unit = with(scheduledNetwork()) {
         // Act
-        val timedPath = target.getShortestPathByTime(0, 4, desiredDeparture)!!
+        val scheduledPath = target.getShortestPathByTime(0, 4, desiredDeparture)!!
 
         // Assert
-        assertThat(timedPath).isEqualTo(expectedLightestPathByTime)
-        assertThat(timedPath.totalDurationMillis()).isEqualTo(expectedTotalDurationMillis)
-        assertThat(timedPath.timeWaitingMillis()).isEqualTo(expectedTimeWaitingMillis)
+        assertThat(scheduledPath).isEqualTo(expectedLightestPathByTime)
+        assertThat(scheduledPath.totalDurationMillis()).isEqualTo(expectedTotalDurationMillis)
+        assertThat(scheduledPath.timeWaitingMillis()).isEqualTo(expectedTimeWaitingMillis)
     }
 
     @Test
-    fun `test illegal state exception`(): Unit = with(timedNetworkIllegalState()) {
+    fun `route with scheduled stop at stop{i} but no corresponding arrival at stop{i+1} should throw an illegal state exception`
+                (): Unit = with(scheduledNetworkIllegalState()) {
         // Act & Assert
         assertFailsWith<IllegalStateException> {
             target.getShortestPathByTime(0, 4, desiredDeparture)
         }
     }
 
-    private fun timedNetwork(): TimedNetworkTestData {
+    private fun scheduledNetwork(): TimedNetworkTestData {
         // Arrange
-        val target = TimedRouteNetwork()
+        val target = ScheduledRouteNetwork()
 
         val now = Instant.now()
 
@@ -73,10 +74,10 @@ class TimedRouteNetworkTest {
             )
         )
 
-        val expectedLightestPathByTime = TimedPath(
+        val expectedLightestPathByTime = ScheduledPath(
             listOf(
-                TimedPathSegment("A", listOf(0, 1, 2), 4, now.plus(1, ChronoUnit.HOURS), now.plus(3, ChronoUnit.HOURS)),
-                TimedPathSegment("C", listOf(2, 3, 4), 4, now.plus(4, ChronoUnit.HOURS), now.plus(6, ChronoUnit.HOURS))
+                ScheduledPathSegment("A", listOf(0, 1, 2), 4, now.plus(1, ChronoUnit.HOURS), now.plus(3, ChronoUnit.HOURS)),
+                ScheduledPathSegment("C", listOf(2, 3, 4), 4, now.plus(4, ChronoUnit.HOURS), now.plus(6, ChronoUnit.HOURS))
             )
         )
 
@@ -93,9 +94,9 @@ class TimedRouteNetworkTest {
         )
     }
 
-    private fun timedNetworkIllegalState(): TimedNetworkIllegalStateTestData {
+    private fun scheduledNetworkIllegalState(): TimedNetworkIllegalStateTestData {
         // Arrange
-        val target = TimedRouteNetwork()
+        val target = ScheduledRouteNetwork()
 
         val now = Instant.now()
 
@@ -115,14 +116,14 @@ class TimedRouteNetworkTest {
     }
 
     data class TimedNetworkIllegalStateTestData(
-        val target: TimedRouteNetwork,
+        val target: ScheduledRouteNetwork,
         val desiredDeparture: Instant,
     )
 
     data class TimedNetworkTestData(
-        val target: TimedRouteNetwork,
+        val target: ScheduledRouteNetwork,
         val desiredDeparture: Instant,
-        val expectedLightestPathByTime: TimedPath,
+        val expectedLightestPathByTime: ScheduledPath,
         val expectedTotalDurationMillis: Long,
         val expectedTimeWaitingMillis: Long
     )

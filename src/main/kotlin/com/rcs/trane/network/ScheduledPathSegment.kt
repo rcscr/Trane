@@ -3,7 +3,7 @@ package org.example.com.rcs.trane.network
 import java.time.Duration
 import java.time.Instant
 
-data class TimedPathSegment(
+data class ScheduledPathSegment(
     val route: String,
     val stops: List<Int>,
     val distance: Int,
