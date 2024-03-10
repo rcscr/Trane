@@ -70,7 +70,7 @@ open class RouteNetwork {
             start,
             end,
             this::pathBuilder,
-            this::pathByNumberOfRoutes,
+            Path.byNumberOfTransfersComparator,
             initialPath())
             ?.weight
     }
@@ -80,7 +80,7 @@ open class RouteNetwork {
             start,
             end,
             this::pathBuilder,
-            this::pathByNumberOfStops,
+            Path.byNumberOfStopsComparator,
             initialPath())
             ?.weight
     }
@@ -127,14 +127,6 @@ open class RouteNetwork {
                 val newPathSegment = PathSegment(route, listOf(nodeA, nodeB), nodeAValue.distances[nodeB]!!)
                 Path(mergePathSegmentIntoPath(path.segments, newPathSegment))
             }
-    }
-
-    private fun pathByNumberOfRoutes(pathA: Path, pathB: Path): Int {
-        return pathA.numberOfRoutes().compareTo(pathB.numberOfRoutes())
-    }
-
-    private fun pathByNumberOfStops(pathA: Path, pathB: Path): Int {
-        return pathA.numberOfStops().compareTo(pathB.numberOfStops())
     }
 
     private fun pathByDistance(pathA: Path, pathB: Path): Int {

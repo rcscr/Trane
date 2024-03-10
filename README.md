@@ -14,7 +14,7 @@ It implements a modified version of Dijkstra's algorithm to efficiently discover
 - lightest path by number of routes (a complex "weight")
 - lightest path by duration, considering the desired departure time and the transport schedule (a very complex "weight")
 
-These are calculated by leveraging a single generic, dynamically-modifiable base algorithm. In this modular algorithm, custom lambdas are passed in as arguments to calculate the "weight" between two nodes; the "weight" is then used to rank possible paths. This concept is know as the "strategy" design pattern, wherein parts of an algorithm can be injected and swapped. By simply implementing said lambdas, anyone can extend this library to handle new use cases, including beyond the transportation domain.
+These are calculated by leveraging a single generic, dynamically-modifiable base algorithm. In this modular algorithm, custom lambdas are passed in as arguments to aggregate the "weight" between two nodes; the "weight" is then used to rank possible paths. This concept is know as the "strategy" design pattern, wherein parts of an algorithm can be injected and swapped. By simply implementing said lambdas, anyone can extend this library to handle new use cases, including beyond the transportation domain.
 
 <hr>
 

@@ -39,7 +39,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
             start,
             end,
             scheduledPathBuilder(depart),
-            this::scheduledPathByDuration,
+            ScheduledPath.byDurationComparator,
             initialTimedPath())
             ?.weight
     }
@@ -83,10 +83,6 @@ class ScheduledRouteNetwork: RouteNetwork() {
                 ScheduledPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
             }
         }
-    }
-
-    private fun scheduledPathByDuration(pathA: ScheduledPath, pathB: ScheduledPath): Int {
-        return pathA.totalDurationMillis().compareTo(pathB.totalDurationMillis())
     }
 
     private fun initialTimedPath(): ScheduledPath {
