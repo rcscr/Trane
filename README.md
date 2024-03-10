@@ -27,7 +27,7 @@ Quickest path:
 ScheduledPathSegment(route=A, stops=[0, 1, 2], distance=6, departure=2024-03-10T12:30:00Z, arrival=2024-03-10T14:30:00Z)
 ScheduledPathSegment(route=B, stops=[2, 3, 4], distance=6, departure=2024-03-10T14:45:00Z, arrival=2024-03-10T16:45:00Z)
 Total distance: 12 km
-Time spent waiting for first train: 20m minutes
-Time spend waiting between trains: 15m
+Time waiting for first train: 20m minutes
+Time waiting between trains: 15m
 Total duration (excluding initial wait time): 4h 15m
 </pre>
