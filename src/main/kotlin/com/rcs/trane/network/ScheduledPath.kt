@@ -7,7 +7,10 @@ data class ScheduledPath(val segments: List<ScheduledPathSegment>) {
     fun timeWaitingMillis(): Long {
         return segments.indices.sumOf { i ->
             if (i + 1 < segments.size)
-                Duration.between(segments[i].arrival, segments[i + 1].departure).toMillis()
+                Duration.between(
+                    segments[i].arrival.toInstantToday(),
+                    segments[i+1].departure.toInstantToday())
+                    .toMillis()
             else
                 0
         }

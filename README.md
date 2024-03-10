@@ -22,10 +22,10 @@ These are calculated by leveraging a single generic, dynamically-modifiable base
 
 <pre>
 Discovering quickest path (by duration) from stop 0 to stop 4
-Desired departure time: 2024-03-10T12:10:00Z
+Desired departure time: LocalTime(localTime=12:10)
 Quickest path:
-ScheduledPathSegment(route=A, stops=[0, 1, 2], distance=6, departure=2024-03-10T12:30:00Z, arrival=2024-03-10T14:30:00Z)
-ScheduledPathSegment(route=B, stops=[2, 3, 4], distance=6, departure=2024-03-10T14:45:00Z, arrival=2024-03-10T16:45:00Z)
+ScheduledPathSegment(route=A, stops=[0, 1, 2], distance=6, departure=LocalTime(localTime=12:30), arrival=LocalTime(localTime=14:30))
+ScheduledPathSegment(route=B, stops=[2, 3, 4], distance=6, departure=LocalTime(localTime=14:45), arrival=LocalTime(localTime=16:45))
 Total distance: 12 km
 Time spent waiting for first train: 20m minutes
 Time spend waiting between trains: 15m

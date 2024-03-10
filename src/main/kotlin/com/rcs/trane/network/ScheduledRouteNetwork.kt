@@ -14,7 +14,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
         routeType: RouteType,
         stops: SequencedSet<Int>,
         distances: List<Int>,
-        times: List<List<Instant>>
+        times: List<List<LocalTime>>
     ) {
         validate(route, routeType, stops, distances, times)
         super.addRoute(route, routeType, stops, distances)
@@ -34,11 +34,11 @@ class ScheduledRouteNetwork: RouteNetwork() {
         }
     }
 
-    fun getShortestPathByTime(start: Int, end: Int, depart: Instant): ScheduledPath? {
+    fun getShortestPathByTime(start: Int, end: Int, depart: LocalTime): ScheduledPath? {
         return graph.getLightestPathComplex(
             start,
             end,
-            scheduledPathBuilder(depart),
+            scheduledPathBuilder(depart.toInstantToday()),
             this::scheduledPathByDuration,
             initialTimedPath())
             ?.weight
@@ -49,7 +49,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
         routeType: RouteType,
         stops: SequencedSet<Int>,
         distances: List<Int>,
-        times: List<List<Instant>>
+        times: List<List<LocalTime>>
     ) {
         if (routeType != RouteType.Unidirectional) {
             throw UnsupportedOperationException("TimedRouteNetwork currently only supports Unidirectional routes")
@@ -60,13 +60,16 @@ class ScheduledRouteNetwork: RouteNetwork() {
         super.validate(route, routeType, stops, distances)
     }
 
+    /**
+     * TODO: if no trips found today, look for a trip tomorrow
+     */
     private fun scheduledPathBuilder(depart: Instant): (path: ScheduledPath, nodeA: Int, nodeB: Int) -> List<ScheduledPath> {
         return { path: ScheduledPath, nodeA: Int, nodeB: Int ->
             var currentTime = depart
 
             if (path.segments.isNotEmpty()) {
                 currentTime = currentTime
-                    .plus(Duration.between(depart, path.segments.first().departure).toMillis(), ChronoUnit.MILLIS)
+                    .plus(Duration.between(depart, path.segments.first().departure.toInstantToday()).toMillis(), ChronoUnit.MILLIS)
                     .plus(path.totalDurationMillis(), ChronoUnit.MILLIS)
             }
 
@@ -75,11 +78,14 @@ class ScheduledRouteNetwork: RouteNetwork() {
 
             nodeAValue.routes[nodeB]!!
                 .mapNotNull { route ->
-                    val nextDeparture = nodeAValue.times!![route]!!.firstOrNull { it >= currentTime }
+                    val nextDeparture = nodeAValue.times!![route]!!
+                        .firstOrNull { it.toInstantToday() >= currentTime }
+
                     if (nextDeparture == null) {
                         null
                     } else {
-                        val arrival = nodeBValue.times!![route]!!.firstOrNull { it > nextDeparture }
+                        val arrival = nodeBValue.times!![route]!!
+                            .firstOrNull { it.toInstantToday() > nextDeparture.toInstantToday() }
 
                         if (arrival == null) {
                             throw IllegalStateException("Route $route connection $nodeA and $nodeA has a " +

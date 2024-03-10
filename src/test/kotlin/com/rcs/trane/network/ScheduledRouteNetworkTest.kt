@@ -1,13 +1,12 @@
 package com.rcs.trane.network
 
 import org.assertj.core.api.Assertions.assertThat
+import org.example.com.rcs.trane.network.LocalTime
 import org.example.com.rcs.trane.network.ScheduledPath
 import org.example.com.rcs.trane.network.ScheduledPathSegment
 import org.example.com.rcs.trane.network.ScheduledRouteNetwork
 import org.junit.jupiter.api.Test
 import java.time.Duration
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 import kotlin.test.assertFailsWith
 
 class ScheduledRouteNetworkTest {
@@ -36,7 +35,7 @@ class ScheduledRouteNetworkTest {
         // Arrange
         val target = ScheduledRouteNetwork()
 
-        val now = Instant.now()
+        val desiredDeparture = LocalTime("12:10")
 
         target.addScheduledRoute(
             "A",
@@ -44,9 +43,9 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(0, 1, 2),
             listOf(2, 2),
             listOf(
-                listOf(now.plus(1, ChronoUnit.HOURS)),
-                listOf(now.plus(2, ChronoUnit.HOURS)),
-                listOf(now.plus(3, ChronoUnit.HOURS))
+                listOf(LocalTime("12:30")),
+                listOf(LocalTime("13:30")),
+                listOf(LocalTime("14:30"))
             )
         )
 
@@ -56,9 +55,9 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(2, 3, 4),
             listOf(2, 2),
             listOf(
-                listOf(now.plus(4, ChronoUnit.HOURS)),
-                listOf(now.plus(6, ChronoUnit.HOURS)),
-                listOf(now.plus(8, ChronoUnit.HOURS))
+                listOf(LocalTime("16:30")),
+                listOf(LocalTime("17:30")),
+                listOf(LocalTime("18:30"))
             )
         )
 
@@ -68,16 +67,16 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(2, 3, 4),
             listOf(2, 2),
             listOf(
-                listOf(now.plus(4, ChronoUnit.HOURS)),
-                listOf(now.plus(5, ChronoUnit.HOURS)),
-                listOf(now.plus(6, ChronoUnit.HOURS))
+                listOf(LocalTime("15:30")),
+                listOf(LocalTime("16:30")),
+                listOf(LocalTime("17:30"))
             )
         )
 
         val expectedLightestPathByTime = ScheduledPath(
             listOf(
-                ScheduledPathSegment("A", listOf(0, 1, 2), 4, now.plus(1, ChronoUnit.HOURS), now.plus(3, ChronoUnit.HOURS)),
-                ScheduledPathSegment("C", listOf(2, 3, 4), 4, now.plus(4, ChronoUnit.HOURS), now.plus(6, ChronoUnit.HOURS))
+                ScheduledPathSegment("A", listOf(0, 1, 2), 4, LocalTime("12:30"), LocalTime("14:30")),
+                ScheduledPathSegment("C", listOf(2, 3, 4), 4, LocalTime("15:30"), LocalTime("17:30"))
             )
         )
 
@@ -87,7 +86,7 @@ class ScheduledRouteNetworkTest {
 
         return TimedNetworkTestData(
             target,
-            now,
+            desiredDeparture,
             expectedLightestPathByTime,
             expectedTotalDurationMillis,
             expectedTimeWaitingMillis
@@ -98,7 +97,7 @@ class ScheduledRouteNetworkTest {
         // Arrange
         val target = ScheduledRouteNetwork()
 
-        val now = Instant.now()
+        val desiredDeparture = LocalTime("15:30")
 
         target.addScheduledRoute(
             "A",
@@ -106,23 +105,23 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(0, 1, 2),
             listOf(2, 2),
             listOf(
-                listOf(now.plus(1, ChronoUnit.HOURS)),
-                listOf(now.plus(5, ChronoUnit.HOURS)),
-                listOf(now.plus(4, ChronoUnit.HOURS))
+                listOf(LocalTime("15:30")),
+                listOf(LocalTime("16:30")),
+                listOf(LocalTime("16:00"))
             )
         )
 
-        return TimedNetworkIllegalStateTestData(target, now)
+        return TimedNetworkIllegalStateTestData(target, desiredDeparture)
     }
 
     data class TimedNetworkIllegalStateTestData(
         val target: ScheduledRouteNetwork,
-        val desiredDeparture: Instant,
+        val desiredDeparture: LocalTime,
     )
 
     data class TimedNetworkTestData(
         val target: ScheduledRouteNetwork,
-        val desiredDeparture: Instant,
+        val desiredDeparture: LocalTime,
         val expectedLightestPathByTime: ScheduledPath,
         val expectedTotalDurationMillis: Long,
         val expectedTimeWaitingMillis: Long
