@@ -1,9 +1,7 @@
 package org.example.com.rcs.trane.network
 
-import java.time.Instant
-import java.time.LocalDateTime
+import java.time.*
 import java.time.LocalTime
-import java.time.ZoneOffset
 
 data class LocalTime(private val localTime: String) {
 
@@ -15,10 +13,14 @@ data class LocalTime(private val localTime: String) {
         }
     }
 
-    fun toInstantToday(): Instant {
+    fun toInstantOnDay(day: Instant): Instant {
         val localTime = LocalTime.parse(localTime)
-        val today = LocalDateTime.now()
+        val today = LocalDateTime.ofInstant(day, ZoneId.of("UTC"))
         val dateTime = LocalDateTime.of(today.toLocalDate(), localTime)
         return dateTime.toInstant(ZoneOffset.UTC)
+    }
+
+    fun toInstantToday(): Instant {
+        return toInstantOnDay(Instant.now())
     }
 }

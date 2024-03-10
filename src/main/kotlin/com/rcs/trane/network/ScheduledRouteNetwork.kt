@@ -44,11 +44,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
             ?.weight
     }
 
-    private fun validate(
-        routeType: RouteType,
-        stops: SequencedSet<Int>,
-        times: List<List<LocalTime>>
-    ) {
+    private fun validate(routeType: RouteType, stops: SequencedSet<Int>, times: List<List<LocalTime>>) {
         if (routeType != RouteType.Unidirectional) {
             throw UnsupportedOperationException("TimedRouteNetwork currently only supports Unidirectional routes")
         }
@@ -67,31 +63,25 @@ class ScheduledRouteNetwork: RouteNetwork() {
                     .plus(path.totalDurationMillis(), ChronoUnit.MILLIS)
             }
 
-            val nodeAValue = graph.getValue(nodeA)!!
-            val nodeBValue = graph.getValue(nodeB)!!
+            val stopDataA = graph.getValue(nodeA)!!
+            val stopDataB = graph.getValue(nodeB)!!
 
-            nodeAValue.routes[nodeB]!!
-                .mapNotNull { route ->
-                    val timesForThisRouteA = nodeAValue.times!![route]!!
-                    val timesForThisRouteB = nodeBValue.times!![route]!!
+            stopDataA.routes[nodeB]!!.map { route ->
+                val timesForThisRouteA = stopDataA.times!![route]!!
+                val timesForThisRouteB = stopDataB.times!![route]!!
 
-                    val nextDeparture = findNextTime(currentTime, timesForThisRouteA)
+                val nextDeparture = findNextTime(currentTime, timesForThisRouteA)
+                val arrival = findNextTime(nextDeparture, timesForThisRouteB)
 
-                    if (nextDeparture == null) {
-                        null
-                    } else {
-                        val arrival = findNextTime(nextDeparture, timesForThisRouteB)!!
-
-                        val newPathSegment = ScheduledPathSegment(
-                            route,
-                            listOf(nodeA, nodeB),
-                            nodeAValue.distances[nodeB]!!,
-                            nextDeparture,
-                            arrival
-                        )
-                        ScheduledPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
-                    }
-                }
+                val newPathSegment = ScheduledPathSegment(
+                    route,
+                    listOf(nodeA, nodeB),
+                    stopDataA.distances[nodeB]!!,
+                    nextDeparture,
+                    arrival
+                )
+                ScheduledPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
+            }
         }
     }
 
@@ -129,17 +119,17 @@ class ScheduledRouteNetwork: RouteNetwork() {
         return path + pathSegment
     }
 
-    private fun findNextTime(start: Instant, timetable: List<LocalTime>): Instant? {
+    private fun findNextTime(start: Instant, timetable: List<LocalTime>): Instant {
         var time = timetable
-            .map { it.toInstantToday() }
+            .map { it.toInstantOnDay(start) }
             .firstOrNull { it >= start }
 
         if (time == null) {
             time = timetable
-                .map { it.toInstantToday().plus(1, ChronoUnit.DAYS) }
+                .map { it.toInstantOnDay(start).plus(1, ChronoUnit.DAYS) }
                 .firstOrNull { it >= start }
         }
 
-        return time
+        return time!!
     }
 }
