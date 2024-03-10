@@ -38,7 +38,7 @@ class ScheduledRouteNetworkTest {
         // Arrange
         val target = ScheduledRouteNetwork()
 
-        val desiredDeparture = LocalTime("12:10")
+        val desiredDeparture = LocalTime("12:10").toInstantToday()
 
         target.addScheduledRoute(
             "A",
@@ -102,7 +102,7 @@ class ScheduledRouteNetworkTest {
         // Arrange
         val target = ScheduledRouteNetwork()
 
-        val desiredDeparture = LocalTime("12:40")
+        val desiredDeparture = LocalTime("12:40").toInstantToday()
 
         target.addScheduledRoute(
             "A",
@@ -154,7 +154,7 @@ class ScheduledRouteNetworkTest {
         val target: ScheduledRouteNetwork,
         val start: Int,
         val stop: Int,
-        val desiredDeparture: LocalTime,
+        val desiredDeparture: Instant,
         val expectedLightestPathByTime: ScheduledPath,
         val expectedTotalDurationMillis: Long,
         val expectedTimeWaitingMillis: Long

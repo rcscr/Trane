@@ -34,11 +34,11 @@ class ScheduledRouteNetwork: RouteNetwork() {
         }
     }
 
-    fun getShortestPathByTime(start: Int, end: Int, depart: LocalTime): ScheduledPath? {
+    fun getShortestPathByTime(start: Int, end: Int, depart: Instant): ScheduledPath? {
         return graph.getLightestPathComplex(
             start,
             end,
-            scheduledPathBuilder(depart.toInstantToday()),
+            scheduledPathBuilder(depart),
             this::scheduledPathByDuration,
             initialTimedPath())
             ?.weight

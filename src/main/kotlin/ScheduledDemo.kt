@@ -33,12 +33,12 @@ fun main() {
         )
     )
 
-    val desiredDepartureTime = LocalTime("12:10")
+    val desiredDepartureTime = LocalTime("12:10").toInstantToday()
 
     val path = routeNetwork.getShortestPathByTime(0, 4, desiredDepartureTime)!!
 
     val initialWaitTime = Duration.between(
-        desiredDepartureTime.toInstantToday(),
+        desiredDepartureTime,
         path.segments.first().departure)
         .toKotlinDuration()
 
