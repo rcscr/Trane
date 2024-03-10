@@ -8,7 +8,7 @@ data class LocalTime(private val localTime: String) {
     init {
         try {
             LocalTime.parse(localTime)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             throw IllegalArgumentException("Invalid time")
         }
     }
