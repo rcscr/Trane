@@ -3,7 +3,8 @@ package org.example.com.rcs.trane.network
 import com.rcs.trane.network.RouteType
 import com.rcs.trane.network.StopData
 import java.time.Duration
-import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import java.util.SequencedSet
 
@@ -34,7 +35,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
         }
     }
 
-    fun getShortestPathByTime(start: Int, end: Int, depart: Instant): ScheduledPath? {
+    fun getShortestPathByTime(start: Int, end: Int, depart: LocalDateTime): ScheduledPath? {
         return graph.getLightestPathComplex(
             start,
             end,
@@ -53,7 +54,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
         }
     }
 
-    private fun scheduledPathBuilder(depart: Instant): (path: ScheduledPath, nodeA: Int, nodeB: Int) -> List<ScheduledPath> {
+    private fun scheduledPathBuilder(depart: LocalDateTime): (path: ScheduledPath, nodeA: Int, nodeB: Int) -> List<ScheduledPath> {
         return { path: ScheduledPath, nodeA: Int, nodeB: Int ->
             var currentTime = depart
 
@@ -70,14 +71,14 @@ class ScheduledRouteNetwork: RouteNetwork() {
                 val timesForThisRouteA = stopDataA.times!![route]!!
                 val timesForThisRouteB = stopDataB.times!![route]!!
 
-                val nextDeparture = findNextTime(currentTime, timesForThisRouteA)
-                val arrival = findNextTime(nextDeparture, timesForThisRouteB)
+                val departure = findNextTime(currentTime, timesForThisRouteA)
+                val arrival = findNextTime(departure, timesForThisRouteB)
 
                 val newPathSegment = ScheduledPathSegment(
                     route,
                     listOf(nodeA, nodeB),
                     stopDataA.distances[nodeB]!!,
-                    nextDeparture,
+                    departure,
                     arrival
                 )
                 ScheduledPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
@@ -115,17 +116,15 @@ class ScheduledRouteNetwork: RouteNetwork() {
         return path + pathSegment
     }
 
-    private fun findNextTime(start: Instant, timetable: List<LocalTime>): Instant {
-        var time = timetable
-            .map { it.toInstantOnDay(start) }
-            .firstOrNull { it >= start }
-
-        if (time == null) {
-            time = timetable
-                .map { it.toInstantOnDay(start).plus(1, ChronoUnit.DAYS) }
-                .firstOrNull { it >= start }
-        }
-
-        return time!!
+    /**
+     * If a time is found today, return that time, else return the soonest available time tomorrow
+     */
+    private fun findNextTime(start: LocalDateTime, timetable: List<LocalTime>): LocalDateTime {
+        return (0..1)
+            .firstNotNullOf { day ->
+                timetable
+                    .map { it.atDate(start.toLocalDate()).plus(day.toLong(), ChronoUnit.DAYS) }
+                    .firstOrNull { it >= start }
+            }
     }
 }

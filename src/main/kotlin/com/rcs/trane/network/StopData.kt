@@ -1,6 +1,6 @@
 package com.rcs.trane.network
 
-import org.example.com.rcs.trane.network.LocalTime
+import java.time.LocalTime
 
 data class StopData(
     // distances[S] is the distance between this stop and stop S

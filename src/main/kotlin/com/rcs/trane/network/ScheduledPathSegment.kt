@@ -1,14 +1,14 @@
 package org.example.com.rcs.trane.network
 
 import java.time.Duration
-import java.time.Instant
+import java.time.LocalDateTime
 
 data class ScheduledPathSegment(
     val route: String,
     val stops: List<Int>,
     val distance: Int,
-    val departure: Instant,
-    val arrival: Instant
+    val departure: LocalDateTime,
+    val arrival: LocalDateTime
 ) {
     fun durationMillis(): Long {
         return Duration.between(departure, arrival).toMillis()

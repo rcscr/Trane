@@ -1,13 +1,14 @@
 package com.rcs.trane.network
 
 import org.assertj.core.api.Assertions.assertThat
-import org.example.com.rcs.trane.network.LocalTime
 import org.example.com.rcs.trane.network.ScheduledPath
 import org.example.com.rcs.trane.network.ScheduledPathSegment
 import org.example.com.rcs.trane.network.ScheduledRouteNetwork
 import org.junit.jupiter.api.Test
 import java.time.Duration
-import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 class ScheduledRouteNetworkTest {
@@ -38,7 +39,7 @@ class ScheduledRouteNetworkTest {
         // Arrange
         val target = ScheduledRouteNetwork()
 
-        val desiredDeparture = LocalTime("12:10").toInstantToday()
+        val desiredDeparture = LocalTime.parse("12:10").atDate(LocalDate.now())
 
         target.addScheduledRoute(
             "A",
@@ -46,9 +47,9 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(0, 1, 2),
             listOf(2, 2),
             listOf(
-                listOf(LocalTime("12:30")),
-                listOf(LocalTime("13:30")),
-                listOf(LocalTime("14:30"))
+                listOf(LocalTime.parse("12:30")),
+                listOf(LocalTime.parse("13:30")),
+                listOf(LocalTime.parse("14:30"))
             )
         )
 
@@ -58,9 +59,9 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(2, 3, 4),
             listOf(2, 2),
             listOf(
-                listOf(LocalTime("16:30")),
-                listOf(LocalTime("17:30")),
-                listOf(LocalTime("18:30"))
+                listOf(LocalTime.parse("16:30")),
+                listOf(LocalTime.parse("17:30")),
+                listOf(LocalTime.parse("18:30"))
             )
         )
 
@@ -70,16 +71,16 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(2, 3, 4),
             listOf(2, 2),
             listOf(
-                listOf(LocalTime("15:30")),
-                listOf(LocalTime("16:30")),
-                listOf(LocalTime("17:30"))
+                listOf(LocalTime.parse("15:30")),
+                listOf(LocalTime.parse("16:30")),
+                listOf(LocalTime.parse("17:30"))
             )
         )
 
         val expectedLightestPathByTime = ScheduledPath(
             listOf(
-                ScheduledPathSegment("A", listOf(0, 1, 2), 4, LocalTime("12:30").toInstantToday(), LocalTime("14:30").toInstantToday()),
-                ScheduledPathSegment("C", listOf(2, 3, 4), 4, LocalTime("15:30").toInstantToday(), LocalTime("17:30").toInstantToday())
+                ScheduledPathSegment("A", listOf(0, 1, 2), 4, LocalTime.parse("12:30").atDate(LocalDate.now()), LocalTime.parse("14:30").atDate(LocalDate.now())),
+                ScheduledPathSegment("C", listOf(2, 3, 4), 4, LocalTime.parse("15:30").atDate(LocalDate.now()), LocalTime.parse("17:30").atDate(LocalDate.now()))
             )
         )
 
@@ -102,7 +103,7 @@ class ScheduledRouteNetworkTest {
         // Arrange
         val target = ScheduledRouteNetwork()
 
-        val desiredDeparture = LocalTime("12:40").toInstantToday()
+        val desiredDeparture = LocalTime.parse("12:40").atDate(LocalDate.now())
 
         target.addScheduledRoute(
             "A",
@@ -110,9 +111,9 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(0, 1, 2),
             listOf(2, 2),
             listOf(
-                listOf(LocalTime("12:30")),
-                listOf(LocalTime("13:30")),
-                listOf(LocalTime("14:30"))
+                listOf(LocalTime.parse("12:30")),
+                listOf(LocalTime.parse("13:30")),
+                listOf(LocalTime.parse("14:30"))
             )
         )
 
@@ -122,9 +123,9 @@ class ScheduledRouteNetworkTest {
             linkedSetOf(2, 3, 4),
             listOf(2, 2),
             listOf(
-                listOf(LocalTime("16:30")),
-                listOf(LocalTime("17:30")),
-                listOf(LocalTime("18:30"))
+                listOf(LocalTime.parse("16:30")),
+                listOf(LocalTime.parse("17:30")),
+                listOf(LocalTime.parse("18:30"))
             )
         )
 
@@ -154,13 +155,13 @@ class ScheduledRouteNetworkTest {
         val target: ScheduledRouteNetwork,
         val start: Int,
         val stop: Int,
-        val desiredDeparture: Instant,
+        val desiredDeparture: LocalDateTime,
         val expectedLightestPathByTime: ScheduledPath,
         val expectedTotalDurationMillis: Long,
         val expectedTimeWaitingMillis: Long
     )
 
-    private fun tomorrow(localTime: String): Instant {
-        return LocalTime(localTime).toInstantToday().plus(1, ChronoUnit.DAYS)
+    private fun tomorrow(localTime: String): LocalDateTime {
+        return LocalTime.parse(localTime).atDate(LocalDate.now()).plus(1, ChronoUnit.DAYS)
     }
 }
