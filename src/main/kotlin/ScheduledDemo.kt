@@ -14,11 +14,7 @@ fun main() {
         RouteType.Unidirectional,
         linkedSetOf(0, 1, 2),
         listOf(3, 3),
-        listOf(
-            listOf(LocalTime("12:30")),
-            listOf(LocalTime("13:30")),
-            listOf(LocalTime("14:30"))
-        )
+        listOf(listOf(LocalTime("12:30")), listOf(LocalTime("13:30")), listOf(LocalTime("14:30")))
     )
 
     routeNetwork.addScheduledRoute(
@@ -26,11 +22,15 @@ fun main() {
         RouteType.Unidirectional,
         linkedSetOf(2, 3, 4),
         listOf(3, 3),
-        listOf(
-            listOf(LocalTime("14:45")),
-            listOf(LocalTime("15:45")),
-            listOf(LocalTime("16:45"))
-        )
+        listOf(listOf(LocalTime("14:45")), listOf(LocalTime("15:45")), listOf(LocalTime("16:45")))
+    )
+
+    routeNetwork.addScheduledRoute(
+        "C",
+        RouteType.Unidirectional,
+        linkedSetOf(2, 4),
+        listOf(3),
+        listOf(listOf(LocalTime("15:30")), listOf(LocalTime("16:30")))
     )
 
     val desiredDepartureTime = LocalTime("12:10").toInstantToday()
