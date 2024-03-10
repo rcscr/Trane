@@ -34,24 +34,17 @@ fun main() {
     )
 
     val desiredDepartureTime = LocalTime("12:10").toInstantToday()
-
     val path = routeNetwork.getShortestPathByTime(0, 4, desiredDepartureTime)!!
-
-    val initialWaitTime = Duration.between(
-        desiredDepartureTime,
-        path.segments.first().departure)
-        .toKotlinDuration()
-
+    val initialWaitTime = Duration.between(desiredDepartureTime, path.segments.first().departure).toKotlinDuration()
     val waitTimeBetween = Duration.ofMillis(path.timeWaitingBetweenMillis()).toKotlinDuration()
-
     val totalDuration = Duration.ofMillis(path.totalDurationMillis()).toKotlinDuration()
 
     println("Discovering quickest path (by duration) from stop 0 to stop 4")
     println("Desired departure time: $desiredDepartureTime")
     println("Quickest path:")
     path.segments.forEach { println(it) }
-    println("Total distance: ${path.totalDistance()} km")
-    println("Time spent waiting for first train: $initialWaitTime minutes")
+    println("Total distance: ${path.totalDistance()}km")
+    println("Time spent waiting for first train: $initialWaitTime")
     println("Time spend waiting between trains: $waitTimeBetween")
     println("Total duration (excluding initial wait time): $totalDuration")
 }
