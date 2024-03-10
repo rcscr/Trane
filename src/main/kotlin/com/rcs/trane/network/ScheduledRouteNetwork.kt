@@ -16,7 +16,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
         distances: List<Int>,
         times: List<List<LocalTime>>
     ) {
-        validate(route, routeType, stops, distances, times)
+        validate(routeType, stops, times)
         super.addRoute(route, routeType, stops, distances)
 
         // add times
@@ -45,10 +45,8 @@ class ScheduledRouteNetwork: RouteNetwork() {
     }
 
     private fun validate(
-        route: String,
         routeType: RouteType,
         stops: SequencedSet<Int>,
-        distances: List<Int>,
         times: List<List<LocalTime>>
     ) {
         if (routeType != RouteType.Unidirectional) {
@@ -57,19 +55,15 @@ class ScheduledRouteNetwork: RouteNetwork() {
         if (stops.size != times.size) {
             throw IllegalArgumentException("Each stop must have a corresponding timetable")
         }
-        super.validate(route, routeType, stops, distances)
     }
 
-    /**
-     * TODO: if no trips found today, look for a trip tomorrow
-     */
     private fun scheduledPathBuilder(depart: Instant): (path: ScheduledPath, nodeA: Int, nodeB: Int) -> List<ScheduledPath> {
         return { path: ScheduledPath, nodeA: Int, nodeB: Int ->
             var currentTime = depart
 
             if (path.segments.isNotEmpty()) {
                 currentTime = currentTime
-                    .plus(Duration.between(depart, path.segments.first().departure.toInstantToday()).toMillis(), ChronoUnit.MILLIS)
+                    .plus(Duration.between(depart, path.segments.first().departure).toMillis(), ChronoUnit.MILLIS)
                     .plus(path.totalDurationMillis(), ChronoUnit.MILLIS)
             }
 
@@ -78,19 +72,15 @@ class ScheduledRouteNetwork: RouteNetwork() {
 
             nodeAValue.routes[nodeB]!!
                 .mapNotNull { route ->
-                    val nextDeparture = nodeAValue.times!![route]!!
-                        .firstOrNull { it.toInstantToday() >= currentTime }
+                    val timesForThisRouteA = nodeAValue.times!![route]!!
+                    val timesForThisRouteB = nodeBValue.times!![route]!!
+
+                    val nextDeparture = findNextTime(currentTime, timesForThisRouteA)
 
                     if (nextDeparture == null) {
                         null
                     } else {
-                        val arrival = nodeBValue.times!![route]!!
-                            .firstOrNull { it.toInstantToday() > nextDeparture.toInstantToday() }
-
-                        if (arrival == null) {
-                            throw IllegalStateException("Route $route connection $nodeA and $nodeA has a " +
-                                    "departure from $nodeA but no corresponding arrival at $nodeB")
-                        }
+                        val arrival = findNextTime(nextDeparture, timesForThisRouteB)!!
 
                         val newPathSegment = ScheduledPathSegment(
                             route,
@@ -120,8 +110,7 @@ class ScheduledRouteNetwork: RouteNetwork() {
             // this should never happen as used internally
             if (lastSegment.stops.last() != pathSegment.stops.first() || lastSegment.arrival != pathSegment.departure) {
                 throw AssertionError(
-                    "The last element of the path must be equal to " +
-                            "the first element of the path segment being added.")
+                    "The last element of the path must be equal to the first element of the path segment being added.")
             }
 
             val pathWithoutLastSegment = path.subList(0, path.size - 1)
@@ -138,5 +127,19 @@ class ScheduledRouteNetwork: RouteNetwork() {
         }
 
         return path + pathSegment
+    }
+
+    private fun findNextTime(start: Instant, timetable: List<LocalTime>): Instant? {
+        var time = timetable
+            .map { it.toInstantToday() }
+            .firstOrNull { it >= start }
+
+        if (time == null) {
+            time = timetable
+                .map { it.toInstantToday().plus(1, ChronoUnit.DAYS) }
+                .firstOrNull { it >= start }
+        }
+
+        return time
     }
 }

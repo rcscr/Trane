@@ -39,10 +39,10 @@ fun main() {
 
     val initialWaitTime = Duration.between(
         desiredDepartureTime.toInstantToday(),
-        path.segments.first().departure.toInstantToday())
+        path.segments.first().departure)
         .toKotlinDuration()
 
-    val waitTimeBetween = Duration.ofMillis(path.timeWaitingMillis()).toKotlinDuration()
+    val waitTimeBetween = Duration.ofMillis(path.timeWaitingBetweenMillis()).toKotlinDuration()
 
     val totalDuration = Duration.ofMillis(path.totalDurationMillis()).toKotlinDuration()
 
