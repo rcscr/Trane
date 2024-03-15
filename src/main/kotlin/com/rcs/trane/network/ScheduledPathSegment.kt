@@ -8,7 +8,8 @@ data class ScheduledPathSegment(
     val stops: List<Int>,
     val distance: Int,
     val departure: LocalDateTime,
-    val arrival: LocalDateTime
+    val arrival: LocalDateTime,
+    val delayMillis: Long
 ) {
     fun durationMillis(): Long {
         return Duration.between(departure, arrival).toMillis()

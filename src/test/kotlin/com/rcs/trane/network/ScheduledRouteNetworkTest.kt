@@ -25,6 +25,18 @@ class ScheduledRouteNetworkTest {
     }
 
     @Test
+    fun `correctly calculates the lightest path by duration considering delays`(): Unit = with(happyPathWithDelayScenario()) {
+        // Act
+        val scheduledPath = target.getShortestPathByTime(start, stop, desiredDeparture)!!
+
+        // Assert
+        assertThat(scheduledPath).isEqualTo(expectedLightestPathByTime)
+        assertThat(scheduledPath.totalDurationMillis()).isEqualTo(expectedTotalDurationMillis)
+        assertThat(scheduledPath.timeWaitingBetweenMillis()).isEqualTo(expectedTimeWaitingMillis)
+        assertThat(scheduledPath.totalDelayMillis()).isEqualTo(expectedDelayMillis)
+    }
+
+    @Test
     fun `if there are no transportation options today, finds the soonest option tomorrow`(): Unit = with(missedTrainScenario()) {
         // Act
         val scheduledPath = target.getShortestPathByTime(start, stop, desiredDeparture)!!
@@ -79,8 +91,8 @@ class ScheduledRouteNetworkTest {
 
         val expectedLightestPathByTime = ScheduledPath(
             listOf(
-                ScheduledPathSegment("A", listOf(0, 1, 2), 4, LocalTime.parse("12:30").atDate(LocalDate.now()), LocalTime.parse("14:30").atDate(LocalDate.now())),
-                ScheduledPathSegment("C", listOf(2, 3, 4), 4, LocalTime.parse("15:30").atDate(LocalDate.now()), LocalTime.parse("17:30").atDate(LocalDate.now()))
+                ScheduledPathSegment("A", listOf(0, 1, 2), 4, LocalTime.parse("12:30").atDate(LocalDate.now()), LocalTime.parse("14:30").atDate(LocalDate.now()), 0),
+                ScheduledPathSegment("C", listOf(2, 3, 4), 4, LocalTime.parse("15:30").atDate(LocalDate.now()), LocalTime.parse("17:30").atDate(LocalDate.now()), 0)
             )
         )
 
@@ -96,6 +108,36 @@ class ScheduledRouteNetworkTest {
             expectedLightestPathByTime,
             expectedTotalDurationMillis,
             expectedTimeWaitingMillis
+        )
+    }
+
+    private fun happyPathWithDelayScenario(): TimedNetworkTestData = with(happyPathScenario()) {
+        val expectedDelayMillis = Duration.ofMinutes(15).toMillis()
+        val expectedTotalDurationMillis = Duration.ofHours(6).plusMillis(expectedDelayMillis).toMillis()
+        val expectedTimeWaitingMillis = Duration.ofHours(2).plusMillis(expectedDelayMillis).toMillis()
+
+        // this delay to route B only serves to add a delay to the computed path
+        target.addDelay("B", 0, desiredDeparture.toLocalDate(), expectedDelayMillis)
+
+        // this delay to route C should force it to no longer be the best route
+        target.addDelay("C", 0, desiredDeparture.toLocalDate(), Duration.ofHours(2).toMillis())
+
+        val expectedLightestPathByTime = ScheduledPath(
+            listOf(
+                ScheduledPathSegment("A", listOf(0, 1, 2), 4, LocalTime.parse("12:30").atDate(LocalDate.now()), LocalTime.parse("14:30").atDate(LocalDate.now()), 0),
+                ScheduledPathSegment("B", listOf(2, 3, 4), 4, LocalTime.parse("16:45").atDate(LocalDate.now()), LocalTime.parse("18:45").atDate(LocalDate.now()), expectedDelayMillis)
+            )
+        )
+
+        return TimedNetworkTestData(
+            target,
+            0,
+            4,
+            desiredDeparture,
+            expectedLightestPathByTime,
+            expectedTotalDurationMillis,
+            expectedTimeWaitingMillis,
+            expectedDelayMillis
         )
     }
 
@@ -131,8 +173,8 @@ class ScheduledRouteNetworkTest {
 
         val expectedLightestPathByTime = ScheduledPath(
             listOf(
-                ScheduledPathSegment("A", listOf(0, 1, 2), 4, tomorrow("12:30"), tomorrow("14:30")),
-                ScheduledPathSegment("B", listOf(2, 3, 4), 4, tomorrow("16:30"), tomorrow("18:30"))
+                ScheduledPathSegment("A", listOf(0, 1, 2), 4, tomorrow("12:30"), tomorrow("14:30"), 0),
+                ScheduledPathSegment("B", listOf(2, 3, 4), 4, tomorrow("16:30"), tomorrow("18:30"), 0)
             )
         )
 
@@ -158,7 +200,8 @@ class ScheduledRouteNetworkTest {
         val desiredDeparture: LocalDateTime,
         val expectedLightestPathByTime: ScheduledPath,
         val expectedTotalDurationMillis: Long,
-        val expectedTimeWaitingMillis: Long
+        val expectedTimeWaitingMillis: Long,
+        val expectedDelayMillis: Long? = null
     )
 
     private fun tomorrow(localTime: String): LocalDateTime {

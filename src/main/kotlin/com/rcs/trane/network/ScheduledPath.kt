@@ -21,6 +21,10 @@ data class ScheduledPath(val segments: List<ScheduledPathSegment>) {
         }
     }
 
+    fun totalDelayMillis(): Long {
+        return segments.sumOf { it.delayMillis }
+    }
+
     fun totalDurationMillis(): Long {
         return segments.sumOf { it.durationMillis() } + timeWaitingBetweenMillis()
     }

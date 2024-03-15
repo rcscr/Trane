@@ -35,6 +35,13 @@ fun main() {
     )
 
     val desiredDepartureTime = LocalTime.parse("12:10").atDate(LocalDate.now())
+
+    // B is  15 minutes delayed, so will arrive at final destination at 17:00
+    routeNetwork.addDelay("B", 0, desiredDepartureTime.toLocalDate(), Duration.ofMinutes(15).toMillis())
+
+    // C is 1 hour delayed, so will arrive at final destination at 17:30
+    routeNetwork.addDelay("C", 0, desiredDepartureTime.toLocalDate(), Duration.ofHours(3).toMillis())
+
     val path = routeNetwork.getShortestPathByTime(0, 4, desiredDepartureTime)!!
     val initialWaitTime = Duration.between(desiredDepartureTime, path.segments.first().departure).toKotlinDuration()
     val waitTimeBetween = Duration.ofMillis(path.timeWaitingBetweenMillis()).toKotlinDuration()
@@ -45,6 +52,7 @@ fun main() {
     println("Quickest path:")
     path.segments.forEach { println(it) }
     println("Total distance: ${path.totalDistance()}km")
+    println("Total delays: ${Duration.ofMillis(path.totalDelayMillis()).toKotlinDuration()}")
     println("Time spent waiting for first train: $initialWaitTime")
     println("Time spend waiting between trains: $waitTimeBetween")
     println("Total duration (excluding initial wait time): $totalDuration")
