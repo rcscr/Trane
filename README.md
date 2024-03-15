@@ -6,7 +6,7 @@ Also a nod to John Coltrane, my favorite musician.
 
 <hr>
 
-Trane is a library for modeling transportation networks (buses, subways, trains) that are composed of multiple interconnecting routes.
+Trane is a library for modeling transportation networks (buses, subways, trains) that are composed of multiple interconnecting routes, daily schedules, and even delays.
 
 It implements a modified version of Dijkstra's algorithm to efficiently discover the:
 
