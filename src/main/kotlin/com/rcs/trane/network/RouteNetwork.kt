@@ -85,7 +85,7 @@ open class RouteNetwork {
             ?.weight
     }
 
-    protected fun validate(route: String, routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
+    private fun validate(route: String, routeType: RouteType, stops: SequencedSet<Int>, distances: List<Int>) {
         val routeExists = graph.getNodes().any {
             graph.getValue(it)?.routes?.values?.flatten()?.contains(route) == true
         }
