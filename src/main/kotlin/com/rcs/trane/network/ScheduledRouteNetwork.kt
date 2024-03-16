@@ -11,7 +11,7 @@ import java.util.SequencedSet
 
 class ScheduledRouteNetwork: RouteNetwork() {
 
-    // maps a Pair(route, vehicle, date) to its delay in millis
+    // maps a Pair(route, tripIndex, date) to its delay in millis
     private val delays = mutableMapOf<Triple<String, Int, LocalDate>, Long>()
 
     fun addScheduledRoute(
@@ -40,10 +40,10 @@ class ScheduledRouteNetwork: RouteNetwork() {
     }
 
     /**
-     * vehicleIndex corresponds to the vehicle serving the i'th entry in the stop's timetable
+     * tripIndex corresponds to the i'th entry (trip) in the stop's timetable
      */
-    fun addDelay(route: String, vehicleIndex: Int, day: LocalDate, delayMillis: Long) {
-        delays[Triple(route, vehicleIndex, day)] = delayMillis
+    fun addDelay(route: String, tripIndex: Int, day: LocalDate, delayMillis: Long) {
+        delays[Triple(route, tripIndex, day)] = delayMillis
     }
 
     fun getShortestPathByTime(start: Int, end: Int, depart: LocalDateTime): ScheduledPath? {
@@ -157,8 +157,8 @@ class ScheduledRouteNetwork: RouteNetwork() {
      * Returns the actual time considering delays.
      * If there are no delays, returns the scheduled time.
      */
-    private fun getActualTime(route: String, vehicleIndex: Int, scheduledTime: LocalDateTime): LocalDateTime {
-        return delays[Triple(route, vehicleIndex, scheduledTime.toLocalDate())]
+    private fun getActualTime(route: String, tripIndex: Int, scheduledTime: LocalDateTime): LocalDateTime {
+        return delays[Triple(route, tripIndex, scheduledTime.toLocalDate())]
             ?.let { scheduledTime.plus(it, ChronoUnit.MILLIS) }
             ?: scheduledTime
     }
