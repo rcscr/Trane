@@ -22,7 +22,7 @@ fun main() {
         "B",
         RouteType.Unidirectional,
         linkedSetOf(2, 3, 4),
-        listOf(3, 3),
+        listOf(2, 5),
         listOf(listOf(LocalTime.parse("14:45")), listOf(LocalTime.parse("15:45")), listOf(LocalTime.parse("16:45")))
     )
 
@@ -30,16 +30,17 @@ fun main() {
         "C",
         RouteType.Unidirectional,
         linkedSetOf(2, 4),
-        listOf(3),
+        listOf(7),
         listOf(listOf(LocalTime.parse("15:30")), listOf(LocalTime.parse("16:30")))
     )
 
     val desiredDepartureTime = LocalTime.parse("12:10").atDate(LocalDate.now())
 
-    // B is  15 minutes delayed, so will arrive at final destination at 17:00
+    // B is 15 minutes delayed, so will arrive at final destination at 17:00
     routeNetwork.addDelay("B", 0, desiredDepartureTime.toLocalDate(), Duration.ofMinutes(15).toMillis())
 
-    // C is 1 hour delayed, so will arrive at final destination at 17:30
+    // C, though originally scheduled to arrive sooner than B,
+    // is 1 hour delayed, so will arrive at final destination at 17:30
     routeNetwork.addDelay("C", 0, desiredDepartureTime.toLocalDate(), Duration.ofHours(3).toMillis())
 
     val path = routeNetwork.getShortestPathByTime(0, 4, desiredDepartureTime)!!
@@ -55,5 +56,5 @@ fun main() {
     println("Total delays: ${Duration.ofMillis(path.totalDelayMillis()).toKotlinDuration()}")
     println("Time spent waiting for first train: $initialWaitTime")
     println("Time spend waiting between trains: $waitTimeBetween")
-    println("Total duration (excluding initial wait time): $totalDuration")
+    println("Trip duration (excluding initial wait time): $totalDuration")
 }
