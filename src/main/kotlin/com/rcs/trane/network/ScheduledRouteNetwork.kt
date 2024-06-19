@@ -11,6 +11,8 @@ import java.util.SequencedSet
 
 class ScheduledRouteNetwork: RouteNetwork() {
 
+    private data class TripTime(val scheduledTime: LocalDateTime, val actualTime: LocalDateTime)
+
     // maps a Trip to its delay in millis
     private val delays = mutableMapOf<Trip, Long>()
 
@@ -84,15 +86,15 @@ class ScheduledRouteNetwork: RouteNetwork() {
                 val timesForThisRouteB = stopDataB.times!![route]!!
 
                 val departure = findNextTime(route, currentTime, timesForThisRouteA)
-                val arrival = findNextTime(route, departure.second, timesForThisRouteB)
+                val arrival = findNextTime(route, departure.actualTime, timesForThisRouteB)
 
                 val newPathSegment = ScheduledPathSegment(
                     route,
                     listOf(nodeA, nodeB),
                     stopDataA.distances[nodeB]!!,
-                    departure.second,
-                    arrival.second,
-                    Duration.between(departure.first, departure.second).toMillis()
+                    departure.actualTime,
+                    arrival.actualTime,
+                    Duration.between(departure.scheduledTime, departure.actualTime).toMillis()
                 )
 
                 ScheduledPath(mergePathSegmentIntoPath(path.segments, newPathSegment))
@@ -129,15 +131,13 @@ class ScheduledRouteNetwork: RouteNetwork() {
 
     /**
      * If a time is found today, return that time, else return the soonest available time tomorrow.
-     * This method considers any possible delays and returns a:
-     * Pair<scheduled departure time, actual departure time>
-     * If there is no delay, pair.first == pair.second
+     * This method considers any possible delays and returns both the scheduled and actual time.
      */
     private fun findNextTime(
         route: String,
         start: LocalDateTime,
         timetable: List<LocalTime>
-    ): Pair<LocalDateTime, LocalDateTime> {
+    ): TripTime {
 
         return (0..1)
             .firstNotNullOf { day ->
@@ -146,10 +146,10 @@ class ScheduledRouteNetwork: RouteNetwork() {
                         it.atDate(start.toLocalDate()).plus(day.toLong(), ChronoUnit.DAYS)
                     }
                     .mapIndexed { index, scheduledTime ->
-                        Pair(scheduledTime, getActualTime(route, index, scheduledTime))
+                        TripTime(scheduledTime, getActualTime(route, index, scheduledTime))
                     }
                     .firstOrNull {
-                        it.second >= start
+                        it.actualTime >= start
                     }
             }
     }
