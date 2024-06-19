@@ -34,6 +34,29 @@ class UnidirectionalPropertyGraphTest {
     }
 
     @Test
+    fun `getting transient connections`() {
+        // Arrange
+        val target = UnidirectionalPropertyGraph<Int, Unit>()
+        target.addNode(1, Unit)
+        target.addNode(2, Unit)
+        target.addNode(3, Unit)
+        target.addNode(4, Unit)
+        target.addNode(5, Unit)
+        target.addNode(6, Unit)
+
+        target.addEdge(1, 2)
+        target.addEdge(2, 3)
+        target.addEdge(3, 4)
+        target.addEdge(5, 6)
+
+        // Act
+        val result = target.getTransientConnections(1)
+
+        // Assert
+        assertThat(result).containsExactlyInAnyOrder(2, 3, 4)
+    }
+
+    @Test
     fun `adding a node with connections that don't exist`() {
         // Arrange
         val target = UnidirectionalPropertyGraph<Int, Unit>()
