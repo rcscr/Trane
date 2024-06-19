@@ -1,4 +1,4 @@
-package org.example
+package org.example.com.rcs.trane
 
 import com.rcs.trane.network.RouteType
 import org.example.com.rcs.trane.network.ScheduledRouteNetwork
