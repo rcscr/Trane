@@ -35,4 +35,4 @@ Trip duration (excluding initial wait time): 4h 30m
 
 ### Bonus
 
-I've used an inverted version of Dijkstra's algorithm (to find the heaviest path) to solve [Project Euler's #67](https://projecteuler.net/problem=67) - a difficult problem that haunted me during college!
+I used an inverted version of Dijkstra's algorithm (to find the heaviest path) to solve [Project Euler's #67](https://projecteuler.net/problem=67) - a difficult problem that haunted me during college!
