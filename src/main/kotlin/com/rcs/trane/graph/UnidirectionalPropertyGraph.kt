@@ -96,9 +96,7 @@ open class UnidirectionalPropertyGraph<K, V> {
         pathQueue.add(WeightedPath(linkedSetOf(start), initialWeight))
 
         while (pathQueue.isNotEmpty()) {
-            val candidatePathAndWeight = pathQueue.removeFirst()
-            val candidatePath = candidatePathAndWeight.path
-            val candidateWeight = candidatePathAndWeight.weight
+            val (candidatePath, candidateWeight) = pathQueue.removeFirst()
             val candidateNode = nodes[candidatePath.last()]!!
 
             if (candidateNode.connections.contains(end)) {
@@ -106,7 +104,7 @@ open class UnidirectionalPropertyGraph<K, V> {
             }
 
             candidateNode.connections
-                .filter { !candidatePathAndWeight.path.contains(it) }
+                .filter { !candidatePath.contains(it) }
                 .map { WeightedPath(candidatePath.concat(it), weightAccumulator(candidateWeight, candidateNode.key, it)) }
                 .forEach { pathQueue.add(it) }
         }
@@ -155,9 +153,7 @@ open class UnidirectionalPropertyGraph<K, V> {
         var minWeightedPath: WeightedPath<K, W>? = null
 
         while (pathQueue.isNotEmpty()) {
-            val candidatePathAndWeight = pathQueue.remove()
-            val candidatePath = candidatePathAndWeight.path
-            val candidateWeight = candidatePathAndWeight.weight
+            val (candidatePath, candidateWeight) = pathQueue.remove()
             val candidateNode = nodes[candidatePath.last()]!!
 
             if (candidateNode.connections.contains(end)) {
