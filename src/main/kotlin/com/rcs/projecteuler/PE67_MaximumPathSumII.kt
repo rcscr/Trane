@@ -71,23 +71,14 @@ private fun rightIndexOf(level: Int, index: Int): String {
 }
 
 fun pyramidStringTo2DArray(pyramid: String): Array<IntArray> {
-    // Split the pyramid string into lines
     val lines = pyramid.trim().lines()
-
-    // Determine the number of rows
     val rows = lines.size
-
-    // Initialize a 2D array of (initially empty) intArrays
-    val array2D = Array(rows) { intArrayOf() }
-
-    // Parse each line and fill the 2D array
-    for (i in lines.indices) {
-        array2D[i] = lines[i].trim()
+    val array2D = Array(rows) { i ->
+        lines[i].trim()
             .split(" ")
             .map { Integer.parseInt(it) }
             .toIntArray()
     }
-
     return array2D
 }
 
