@@ -1,4 +1,4 @@
-package org.example.com.rcs.projecteuler
+package com.rcs.projecteuler
 
 import com.rcs.trane.graph.UnidirectionalPropertyGraph
 import com.rcs.trane.graph.WeightedPath
