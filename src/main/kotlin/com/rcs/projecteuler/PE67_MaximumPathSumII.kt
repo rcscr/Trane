@@ -72,14 +72,12 @@ private fun rightIndexOf(level: Int, index: Int): String {
 
 fun pyramidStringTo2DArray(pyramid: String): Array<IntArray> {
     val lines = pyramid.trim().lines()
-    val rows = lines.size
-    val array2D = Array(rows) { i ->
+    return Array(lines.size) { i ->
         lines[i].trim()
             .split(" ")
             .map { Integer.parseInt(it) }
             .toIntArray()
     }
-    return array2D
 }
 
 private const val pyramidString = "" +
